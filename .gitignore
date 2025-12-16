@@ -9,5 +9,4 @@ target/
 # macOS
 .DS_Store
 
-# Logs (se per errore li aggiungi)
 *.log
