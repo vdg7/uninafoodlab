@@ -6,17 +6,17 @@ public class Corso {
 
 	private int idCorso;
 	private String titolo;
-	private String categoria;
+	private String tema;
 	private LocalDate dataInizio;
 	private int frequenzaSettimanale;
 	private int idChef;
 	
 	public Corso() {}
 
-    public Corso(String titolo, String categoria, LocalDate dataInizio,
+    public Corso(String titolo, String tema, LocalDate dataInizio,
                  int frequenzaSettimanale, int idChef) {
         this.titolo = titolo;
-        this.categoria = categoria;
+        this.tema = tema;
         this.dataInizio = dataInizio;
         this.frequenzaSettimanale = frequenzaSettimanale;
         this.idChef = idChef;
@@ -28,8 +28,8 @@ public class Corso {
     public String getTitolo() { return titolo; }
     public void setTitolo(String titolo) { this.titolo = titolo; }
 
-    public String getCategoria() { return categoria; }
-    public void setCategoria(String categoria) { this.categoria = categoria; }
+    public String getTema() { return tema; }
+    public void setTema(String tema) { this.tema = tema; }
 
     public LocalDate getDataInizio() { return dataInizio; }
     public void setDataInizio(LocalDate dataInizio) { this.dataInizio = dataInizio; }
@@ -44,7 +44,7 @@ public class Corso {
 
     @Override
     public String toString() {
-        return "Corso [titolo=" + titolo + ", categoria=" + categoria +
+        return "Corso [titolo=" + titolo + ", tema=" + tema +
                ", dataInizio=" + dataInizio + "]";
     }
 }
