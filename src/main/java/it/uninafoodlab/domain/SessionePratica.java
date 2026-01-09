@@ -2,11 +2,33 @@ package it.uninafoodlab.domain;
 
 import java.time.LocalDate;
 
-public class SessionePratica extends Sessione {
+public class SessionePratica {
+
+    private int idSessione;
+    private LocalDate data;
+    private int durata;
+    private String laboratorio;
+    private int idCorso;
 
     public SessionePratica() {}
 
-    public SessionePratica(LocalDate data, int idCorso) {
-        super(data, idCorso);
+    public int getIdSessione() { return idSessione; }
+    public void setIdSessione(int idSessione) { this.idSessione = idSessione; }
+
+    public LocalDate getData() { return data; }
+    public void setData(LocalDate data) { this.data = data; }
+
+    public int getDurata() { return durata; }
+    public void setDurata(int durata) { this.durata = durata; }
+
+    public String getLaboratorio() { return laboratorio; }
+    public void setLaboratorio(String laboratorio) { this.laboratorio = laboratorio; }
+
+    public int getIdCorso() { return idCorso; }
+    public void setIdCorso(int idCorso) { this.idCorso = idCorso; }
+
+    @Override
+    public String toString() {
+        return "SessionePratica [data=" + data + ", durata=" + durata + " min, lab=" + laboratorio + "]";
     }
 }
