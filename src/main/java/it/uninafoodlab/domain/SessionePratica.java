@@ -7,7 +7,7 @@ public class SessionePratica {
     private int idSessione;
     private LocalDate data;
     private int durata;
-    private String laboratorio;
+    private String luogo;
     private int idCorso;
 
     public SessionePratica() {}
@@ -21,14 +21,14 @@ public class SessionePratica {
     public int getDurata() { return durata; }
     public void setDurata(int durata) { this.durata = durata; }
 
-    public String getLaboratorio() { return laboratorio; }
-    public void setLaboratorio(String laboratorio) { this.laboratorio = laboratorio; }
+    public String getLuogo() { return luogo; }
+    public void setLuogo(String laboratorio) { this.luogo = laboratorio; }
 
     public int getIdCorso() { return idCorso; }
     public void setIdCorso(int idCorso) { this.idCorso = idCorso; }
 
     @Override
     public String toString() {
-        return "SessionePratica [data=" + data + ", durata=" + durata + " min, lab=" + laboratorio + "]";
+        return "SessionePratica [data=" + data + ", durata=" + durata + " min, lab=" + luogo + "]";
     }
 }
