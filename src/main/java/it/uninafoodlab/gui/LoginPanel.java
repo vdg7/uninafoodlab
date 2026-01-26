@@ -5,9 +5,9 @@ import java.util.function.BiConsumer;
 
 import javax.swing.*;
 
-public class LoginPanel extends JPanel implements MessageView{
+public class LoginPanel extends JPanel{
 	
-	private JTextField usernameField;
+    private JTextField emailField;
     private JPasswordField passwordField;
     private JButton loginButton;
     
@@ -19,12 +19,12 @@ public class LoginPanel extends JPanel implements MessageView{
     }
     
     public void setLoginAction(BiConsumer<String, String> action) {
-    	loginButton.addActionListener(e -> {
-            action.accept(
-                usernameField.getText(),
-                new String(passwordField.getPassword())
-            );
-        });
+        loginButton.addActionListener(e ->
+                action.accept(
+                        emailField.getText(),
+                        new String(passwordField.getPassword())
+                )
+        );
     }
     
     
@@ -50,78 +50,51 @@ public class LoginPanel extends JPanel implements MessageView{
     }
     
     private void initForm() {
-        JPanel formPanel = new JPanel(new GridBagLayout());
-        formPanel.setBackground(Util.UNINA_BLUE);
+        JPanel form = new JPanel(new GridBagLayout());
+        form.setBackground(Util.UNINA_BLUE);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
-        gbc.anchor = GridBagConstraints.WEST;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        gbc.insets = new Insets(5, 0, 15, 0);
 
-        gbc.insets = new Insets(0, 0, 5, 0);
-
-        // USERNAME LABEL
         gbc.gridy = 0;
-        JLabel usernameLabel = new JLabel("Username");
-        usernameLabel.setForeground(Color.WHITE);
-        formPanel.add(usernameLabel, gbc);
+        form.add(createLabel("Email"), gbc);
 
-        // USERNAME FIELD
         gbc.gridy = 1;
-        gbc.insets = new Insets(0, 0, 15, 0);
-        usernameField = new JTextField(22);
-        formPanel.add(usernameField, gbc);
+        emailField = new JTextField(22);
+        form.add(emailField, gbc);
 
-        // PASSWORD LABEL
         gbc.gridy = 2;
-        gbc.insets = new Insets(0, 0, 5, 0);
-        JLabel passwordLabel = new JLabel("Password");
-        passwordLabel.setForeground(Color.WHITE);
-        formPanel.add(passwordLabel, gbc);
+        form.add(createLabel("Password"), gbc);
 
-        // PASSWORD FIELD
         gbc.gridy = 3;
-        gbc.insets = new Insets(0, 0, 20, 0);
         passwordField = new JPasswordField(22);
-        formPanel.add(passwordField, gbc);
+        form.add(passwordField, gbc);
 
-        // LOGIN BUTTON
         gbc.gridy = 4;
-        gbc.insets = new Insets(10, 0, 0, 0);
+        gbc.insets = new Insets(20, 0, 0, 0);
         gbc.fill = GridBagConstraints.NONE;
-        gbc.anchor = GridBagConstraints.CENTER;
 
         loginButton = new JButton("Login");
         loginButton.setFont(new Font("Arial", Font.BOLD, 18));
-        loginButton.setForeground(Util.UNINA_BLUE);
         loginButton.setBackground(Color.WHITE);
+        loginButton.setForeground(Util.UNINA_BLUE);
 
-        formPanel.add(loginButton, gbc);
+        form.add(loginButton, gbc);
 
-        // wrapper che centra il blocco
-        JPanel centerWrapper = new JPanel(new GridBagLayout());
-        centerWrapper.setBorder(
-        	    BorderFactory.createEmptyBorder(0, 0, 50, 0)
-        	);
-        centerWrapper.setBackground(Util.UNINA_BLUE);
-        centerWrapper.add(formPanel);
+        JPanel wrapper = new JPanel(new GridBagLayout());
+        wrapper.setBackground(Util.UNINA_BLUE);
+        wrapper.add(form);
 
-        add(centerWrapper, BorderLayout.CENTER);
+        add(wrapper, BorderLayout.CENTER);
     }
 
-
-
-
-	@Override
-	public void showError(String message) {
-		JOptionPane.showMessageDialog(this, message, "Errore", JOptionPane.ERROR_MESSAGE);
-	}
-
-
-	@Override
-	public void showSuccess(String message) {
-		 JOptionPane.showMessageDialog(this, message, "Successo", JOptionPane.INFORMATION_MESSAGE);
-	}
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setForeground(Color.WHITE);
+        return label;
+    }
 	
 	@Override
 	public Dimension getPreferredSize() {

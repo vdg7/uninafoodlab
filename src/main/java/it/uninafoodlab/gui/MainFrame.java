@@ -3,7 +3,6 @@ package it.uninafoodlab.gui;
 import java.awt.Rectangle;
 import java.awt.GraphicsEnvironment;
 import java.awt.CardLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.GraphicsDevice;
 
@@ -13,12 +12,9 @@ import java.awt.Image;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import it.uninafoodlab.controller.Navigator;
-import it.uninafoodlab.controller.View;
-
-public class MainFrame extends JFrame implements Navigator {
+public class MainFrame extends JFrame{
 	
-    private CardLayout cardLayout;
+    private CardLayout layout;
     private JPanel container;
     
 	public MainFrame(){
@@ -26,6 +22,7 @@ public class MainFrame extends JFrame implements Navigator {
 		setTitle("UninaFoodLab");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		initLayout();
+		goLoginSize();
 		
 		if (Taskbar.isTaskbarSupported()) {
 		    try {
@@ -40,25 +37,17 @@ public class MainFrame extends JFrame implements Navigator {
 	}
 
     private void initLayout() {
-        cardLayout = new CardLayout();
-        container = new JPanel(cardLayout);
+        layout = new CardLayout();
+        container = new JPanel(layout);
         add(container);
     }
 
-    public void addView(View view, JPanel panel) {
-    	panel.setName(view.name());
-        container.add(panel, view.name());
+    public void addView(String name, JPanel panel) {
+        container.add(panel, name);
     }
 
-    @Override
-    public void showView(View view) {
-    	if(view == View.HOME) {
-    		goFullscreen();
-    	} else if (view == View.LOGIN) {
-    		goLoginSize();
-    	}
-    	
-    	cardLayout.show(container, view.name());
+    public void showView(String name) {
+        layout.show(container, name);
     }
     
     private void goLoginSize() {
@@ -68,7 +57,7 @@ public class MainFrame extends JFrame implements Navigator {
         setLocationRelativeTo(null);
     }
     
-    private void goFullscreen() {
+    public void goFullscreen() {
 		Rectangle screen = getScreenSize();
 		int width = 1728;
 		int height = 972;
@@ -85,15 +74,6 @@ public class MainFrame extends JFrame implements Navigator {
 	       GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 	       GraphicsDevice defaultScreen = ge.getDefaultScreenDevice();
 	       return defaultScreen.getDefaultConfiguration().getBounds();
-	}
-	
-	public JPanel getPanel(View view) {
-	    for (Component comp : container.getComponents()) {
-	        if (comp.getName() != null && comp.getName().equals(view.name())) {
-	            return (JPanel) comp;
-	        }
-	    }
-	    return null;
 	}
 
 }
