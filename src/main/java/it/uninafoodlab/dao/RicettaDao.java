@@ -15,7 +15,7 @@ public class RicettaDao {
         String sql = """
             SELECT ID_Ricetta, Nome, Descrizione, ID_Corso
             FROM Ricetta
-            WHERE ID_Corso = ?
+            WHERE ID_SessionePratica = ?
         """;
 
         try (Connection conn = DbConnectionFactory.openConnection();
@@ -29,7 +29,7 @@ public class RicettaDao {
                 r.setIdRicetta(rs.getInt("ID_Ricetta"));
                 r.setNome(rs.getString("Nome"));
                 r.setDescrizione(rs.getString("Descrizione"));
-                r.setIdCorso(rs.getInt("ID_Corso"));
+                r.setIdSessionePratica(rs.getInt("ID_SessionePratica"));
 
                 ricette.add(r);
             }

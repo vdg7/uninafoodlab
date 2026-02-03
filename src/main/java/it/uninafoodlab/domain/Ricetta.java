@@ -4,16 +4,16 @@ public class Ricetta {
 
     private int idRicetta;
     private String nome;
-    private String descrizione;
-    private int idCorso;
+    private String ingredienti;
+    private int idSessionePratica;
 
     public Ricetta() {}
 
-    public Ricetta(int idRicetta, String nome, String descrizione, int idCorso) {
+    public Ricetta(int idRicetta, String nome, String ingredienti, int idSessionePratica) {
         this.idRicetta = idRicetta;
         this.nome = nome;
-        this.descrizione = descrizione;
-        this.idCorso = idCorso;
+        this.ingredienti = ingredienti;
+        this.idSessionePratica = idSessionePratica;
     }
 
     public int getIdRicetta() { return idRicetta; }
@@ -22,11 +22,11 @@ public class Ricetta {
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
 
-    public String getDescrizione() { return descrizione; }
-    public void setDescrizione(String descrizione) { this.descrizione = descrizione; }
+    public String getIngredienti() { return ingredienti; }
+    public void setIngredienti(String Ingredienti) { this.ingredienti = Ingredienti; }
 
-    public int getIdCorso() { return idCorso; }
-    public void setIdCorso(int idCorso) { this.idCorso = idCorso; }
+    public int getIdSessionePratica() { return idSessionePratica; }
+    public void setIdSessionePratica(int idSessionePratica) { this.idSessionePratica = idSessionePratica; }
 
     @Override
     public String toString() {
