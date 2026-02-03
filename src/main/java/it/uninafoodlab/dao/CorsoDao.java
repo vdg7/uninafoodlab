@@ -42,42 +42,44 @@ public class CorsoDao {
 	        }
 
 	        return -1;
-	    }
+	 }
+	 
 	 
 	 public List<Corso> findByChef(int idChef) {
-	        String sql = """
-	            SELECT ID_Corso, Titolo, Tema, DataInizio, Frequenza
-	            FROM Corso
-	            WHERE ID_Chef = ?
-	        """;
+		 String sql = """
+		            SELECT ID_Corso, Titolo, Tema, DataInizio, Frequenza
+		            FROM Corso
+		            WHERE ID_Chef = ?
+		        """;
 
-	        List<Corso> corsi = new ArrayList<>();
+		        List<Corso> corsi = new ArrayList<>();
 
-	        try (Connection conn = DbConnectionFactory.openConnection();
-	             PreparedStatement ps = conn.prepareStatement(sql)) {
+		        try (Connection conn = DbConnectionFactory.openConnection();
+		             PreparedStatement ps = conn.prepareStatement(sql)) {
 
-	            ps.setInt(1, idChef);
-	            ResultSet rs = ps.executeQuery();
+		            ps.setInt(1, idChef);
+		            ResultSet rs = ps.executeQuery();
 
-	            while (rs.next()) {
-	                Corso c = new Corso();
-	                c.setIdCorso(rs.getInt("ID_Corso"));
-	                c.setTitolo(rs.getString("Titolo"));
-	                c.setTema(rs.getString("Tema"));
-	                c.setDataInizio(rs.getDate("DataInizio").toLocalDate());
-	                c.setFrequenzaSettimanale(rs.getInt("Frequenza"));
-	                c.setIdChef(idChef);
-	                corsi.add(c);
-	            }
+		            while (rs.next()) {
+		                Corso c = new Corso();
+		                c.setIdCorso(rs.getInt("ID_Corso"));
+		                c.setTitolo(rs.getString("Titolo"));
+		                c.setTema(rs.getString("Tema"));
+		                c.setDataInizio(rs.getDate("DataInizio").toLocalDate());
+		                c.setFrequenzaSettimanale(rs.getInt("Frequenza"));
+		                c.setIdChef(idChef);
+		                corsi.add(c);
+		            }
 
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
+		        } catch (SQLException e) {
+		            e.printStackTrace();
+		        }
 
-	        return corsi;
-	    }
-
-	    public List<Corso> findByChefAndTema(int idChef, String tema) {
+		        return corsi;
+	 }
+	 
+	 
+	 public List<Corso> findByChefAndTema(int idChef, String tema) {
 	        String sql = """
 	            SELECT ID_Corso, Titolo, Tema, DataInizio, Frequenza
 	            FROM Corso
@@ -110,5 +112,48 @@ public class CorsoDao {
 	        }
 
 	        return corsi;
-	    }
+	 }
+	 
+	 
+	 public boolean update(Corso corso) {
+		    String sql = """
+		        UPDATE Corso 
+		        SET Titolo = ?, Tema = ?, DataInizio = ?, Frequenza = ?
+		        WHERE ID_Corso = ?
+		    """;
+		    
+		    try (Connection conn = DbConnectionFactory.openConnection();
+		         PreparedStatement ps = conn.prepareStatement(sql)) {
+		        
+		        ps.setString(1, corso.getTitolo());
+		        ps.setString(2, corso.getTema());
+		        ps.setDate(3, java.sql.Date.valueOf(corso.getDataInizio()));
+		        ps.setInt(4, corso.getFrequenzaSettimanale());
+		        ps.setInt(5, corso.getIdCorso());
+		        
+		        return ps.executeUpdate() > 0;
+		        
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    }
+		    
+		    return false;
+	 }
+
+	 
+	 public boolean delete(int idCorso) {
+		  String sql = "DELETE FROM Corso WHERE ID_Corso = ?";
+		    
+		  try (Connection conn = DbConnectionFactory.openConnection();
+		       PreparedStatement ps = conn.prepareStatement(sql)) {
+		        
+		        ps.setInt(1, idCorso);
+		        return ps.executeUpdate() > 0;
+		        
+		  } catch (SQLException e) {
+		      e.printStackTrace();
+		  }
+		    
+		  return false;
+	 }
 }
