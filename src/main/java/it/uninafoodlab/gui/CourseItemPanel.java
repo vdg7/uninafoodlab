@@ -9,7 +9,7 @@ import javax.swing.*;
 import it.uninafoodlab.controller.DashboardController;
 import it.uninafoodlab.domain.Corso;
 
-public class CourseItemPanel extends JPanel {
+public class CourseItemPanel extends BasePanel {
 	
     private Color normalBg = new Color(248, 249, 251);
     private Color hoverBg = new Color(230, 235, 245);
@@ -25,7 +25,7 @@ public class CourseItemPanel extends JPanel {
 
         JLabel titolo = new JLabel(corso.getTitolo());
         titolo.setFont(new Font("Arial", Font.BOLD, 16));
-        titolo.setForeground(Util.UNINA_BLUE);
+        titolo.setForeground(UiUtil.UNINA_BLUE);
 
         JLabel tema = new JLabel("Categoria: " + corso.getTema());
         tema.setFont(new Font("Arial", Font.PLAIN, 13));
@@ -36,7 +36,7 @@ public class CourseItemPanel extends JPanel {
 
         JButton dettagli = new JButton("Dettagli");
         dettagli.setFocusPainted(false);
-        dettagli.setBackground(Util.UNINA_BLUE);
+        dettagli.setBackground(UiUtil.UNINA_BLUE);
         dettagli.setForeground(Color.WHITE);
         
         dettagli.addActionListener(e -> onDetails.run());

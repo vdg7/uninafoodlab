@@ -11,21 +11,21 @@ import java.util.List;
 
 import javax.swing.*;
 
-import it.uninafoodlab.app.AppSession;
 import it.uninafoodlab.domain.Chef;
 import it.uninafoodlab.domain.Corso;
 
-public class HomePanel extends JPanel {
+public class HomePanel extends BasePanel {
 
 	private CardLayout contentLayout;
 	private JPanel contentPanel;
 	private JLabel nameLabel;
 	private JLabel emailLabel;
 	private DashboardPanel dashboardPanel;
+	private NewCoursePanel newCoursePanel;
 	
     public HomePanel() {
     	setLayout(new BorderLayout());
-    	setBackground(Util.UNINA_GREY);
+    	setBackground(UiUtil.UNINA_GREY);
     	initSideBar();
     	initContentPanel();
     }
@@ -33,7 +33,7 @@ public class HomePanel extends JPanel {
     public void initSideBar() {
     	JPanel sideBar = new JPanel();
     	sideBar.setLayout(new BorderLayout());
-    	sideBar.setBackground(Util.UNINA_BLUE.darker());
+    	sideBar.setBackground(UiUtil.UNINA_BLUE.darker());
     	sideBar.setPreferredSize(new Dimension(345, 0));
     	
     	sideBar.add(createProfilePanel(), BorderLayout.NORTH);
@@ -45,7 +45,7 @@ public class HomePanel extends JPanel {
     private JPanel createProfilePanel() {
     	JPanel profile = new JPanel();
         profile.setLayout(new BoxLayout(profile, BoxLayout.Y_AXIS));
-        profile.setBackground(Util.UNINA_BLUE.darker());
+        profile.setBackground(UiUtil.UNINA_BLUE.darker());
         profile.setBorder(BorderFactory.createEmptyBorder(20, 20, 40, 20));
 
         JLabel avatar = new JLabel(new ImageIcon(
@@ -78,7 +78,7 @@ public class HomePanel extends JPanel {
     private JPanel createNavPanel() {
         JPanel nav = new JPanel();
         nav.setLayout(new BoxLayout(nav, BoxLayout.Y_AXIS));
-        nav.setBackground(Util.UNINA_BLUE.darker());
+        nav.setBackground(UiUtil.UNINA_BLUE.darker());
         nav.setBorder(BorderFactory.createEmptyBorder(30, 0, 30, 0));
 
         nav.add(Box.createVerticalStrut(20));
@@ -96,11 +96,13 @@ public class HomePanel extends JPanel {
     public void initContentPanel() {
     	contentLayout = new CardLayout();
     	contentPanel = new JPanel(contentLayout);
-    	contentPanel.setBackground(Util.UNINA_GREY);
+    	contentPanel.setBackground(UiUtil.UNINA_GREY);
     	
     	dashboardPanel = new DashboardPanel();
+    	newCoursePanel = new NewCoursePanel();
+    	
     	contentPanel.add(dashboardPanel, "DASHBOARD");
-        contentPanel.add(new JPanel(), "NEWCOURSES");
+        contentPanel.add(newCoursePanel, "NEWCOURSES");
         contentPanel.add(new JPanel(), "REPORT");
 
         contentLayout.show(contentPanel, "DASHBOARD");
@@ -110,12 +112,13 @@ public class HomePanel extends JPanel {
         return dashboardPanel;
     }
     
+    
     private JButton createNavButton(String text, String view) {
         JButton btn = new JButton(text);
         btn.setAlignmentX(Component.CENTER_ALIGNMENT);
         btn.setMaximumSize(new Dimension(220, 50));
         btn.setFocusPainted(false);
-        btn.setBackground(Util.UNINA_BLUE.darker());
+        btn.setBackground(UiUtil.UNINA_BLUE.darker());
         btn.setForeground(Color.WHITE);
 
         btn.addActionListener(e -> contentLayout.show(contentPanel, view));

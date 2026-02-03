@@ -5,7 +5,7 @@ import java.util.function.BiConsumer;
 
 import javax.swing.*;
 
-public class LoginPanel extends JPanel{
+public class LoginPanel extends BasePanel{
 	
     private JTextField emailField;
     private JPasswordField passwordField;
@@ -13,7 +13,7 @@ public class LoginPanel extends JPanel{
     
     public LoginPanel() {
     	setLayout(new BorderLayout());
-    	setBackground(Util.UNINA_BLUE);
+    	setBackground(UiUtil.UNINA_BLUE);
         initHeader();
         initForm();
     }
@@ -30,7 +30,7 @@ public class LoginPanel extends JPanel{
     
     private void initHeader() {
         JPanel header = new JPanel(new BorderLayout());
-        header.setBackground(Util.UNINA_BLUE);
+        header.setBackground(UiUtil.UNINA_BLUE);
         
         JLabel logoUnina = new JLabel(new ImageIcon(
             new ImageIcon(getClass().getResource("/UninaLogoW.png"))
@@ -51,7 +51,7 @@ public class LoginPanel extends JPanel{
     
     private void initForm() {
         JPanel form = new JPanel(new GridBagLayout());
-        form.setBackground(Util.UNINA_BLUE);
+        form.setBackground(UiUtil.UNINA_BLUE);
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.gridx = 0;
@@ -79,12 +79,12 @@ public class LoginPanel extends JPanel{
         loginButton = new JButton("Login");
         loginButton.setFont(new Font("Arial", Font.BOLD, 18));
         loginButton.setBackground(Color.WHITE);
-        loginButton.setForeground(Util.UNINA_BLUE);
+        loginButton.setForeground(UiUtil.UNINA_BLUE);
 
         form.add(loginButton, gbc);
 
         JPanel wrapper = new JPanel(new GridBagLayout());
-        wrapper.setBackground(Util.UNINA_BLUE);
+        wrapper.setBackground(UiUtil.UNINA_BLUE);
         wrapper.add(form);
 
         add(wrapper, BorderLayout.CENTER);
@@ -95,7 +95,18 @@ public class LoginPanel extends JPanel{
         label.setForeground(Color.WHITE);
         return label;
     }
+    
+    public void showInvalidCredentials() {
+    	showError("Email o password non corrette", "Errore di Login");
+    }
 	
+    public void clearFields() {
+        emailField.setText("");
+        passwordField.setText("");
+        emailField.requestFocus();
+    }
+    
+    
 	@Override
 	public Dimension getPreferredSize() {
 	    return new Dimension(500, 450); 

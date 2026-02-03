@@ -8,7 +8,7 @@ import it.uninafoodlab.dao.SessioneOnlineDao;
 import it.uninafoodlab.dao.SessionePraticaDao;
 import it.uninafoodlab.domain.Corso;
 
-public class CourseDetailsPanel extends JPanel {
+public class CourseDetailsPanel extends BasePanel {
 
     private DashboardPanel dashboard;
     private JLabel titleLabel;
@@ -22,12 +22,12 @@ public class CourseDetailsPanel extends JPanel {
 
         this.dashboard = dashboard;
         setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-        setBackground(Util.UNINA_GREY);
+        setBackground(UiUtil.UNINA_GREY);
         setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
 
         titleLabel = new JLabel();
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
-        titleLabel.setForeground(Util.UNINA_BLUE.darker());
+        titleLabel.setForeground(UiUtil.UNINA_BLUE.darker());
 
         temaLabel = new JLabel();
         temaLabel.setFont(new Font("Arial", Font.PLAIN, 18));

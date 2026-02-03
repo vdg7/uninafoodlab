@@ -6,7 +6,7 @@ import javax.swing.*;
 import it.uninafoodlab.controller.DashboardController;
 import it.uninafoodlab.domain.Corso;
 
-public class DashboardPanel extends JPanel {
+public class DashboardPanel extends BasePanel {
 
     private CardLayout centerLayout;
     private JPanel centerPanel;
@@ -16,7 +16,7 @@ public class DashboardPanel extends JPanel {
 
     public DashboardPanel() {
         setLayout(new BorderLayout(20, 20));
-        setBackground(Util.UNINA_GREY);
+        setBackground(UiUtil.UNINA_GREY);
         setBorder(BorderFactory.createEmptyBorder(30, 30, 30, 30));
 
         add(createHeader(), BorderLayout.NORTH);
@@ -24,7 +24,7 @@ public class DashboardPanel extends JPanel {
         // Pannello centrale con card layout
         centerLayout = new CardLayout();
         centerPanel = new JPanel(centerLayout);
-        centerPanel.setBackground(Util.UNINA_GREY);
+        centerPanel.setBackground(UiUtil.UNINA_GREY);
 
         // Card lista corsi
         DashboardController controller = new DashboardController(this);
@@ -59,11 +59,11 @@ public class DashboardPanel extends JPanel {
     private JPanel createHeader() {
         JPanel header = new JPanel();
         header.setLayout(new BoxLayout(header, BoxLayout.Y_AXIS));
-        header.setBackground(Util.UNINA_GREY);
+        header.setBackground(UiUtil.UNINA_GREY);
 
         JLabel title = new JLabel("Dashboard");
         title.setFont(new Font("Arial", Font.BOLD, 28));
-        title.setForeground(Util.UNINA_BLUE.darker());
+        title.setForeground(UiUtil.UNINA_BLUE.darker());
 
         JLabel subtitle = new JLabel("Gestisci i tuoi corsi");
         subtitle.setFont(new Font("Arial", Font.PLAIN, 16));

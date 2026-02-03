@@ -8,7 +8,7 @@ import javax.swing.*;
 import it.uninafoodlab.controller.DashboardController;
 import it.uninafoodlab.domain.Corso;
 
-public class CoursesOverviewCard extends JPanel {
+public class CoursesOverviewCard extends BasePanel {
 
     private JComboBox<String> categoriaFilter;
     private JPanel coursesContainer;
