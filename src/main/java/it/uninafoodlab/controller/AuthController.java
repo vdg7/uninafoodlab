@@ -10,6 +10,7 @@ import it.uninafoodlab.dao.CorsoDao;
 import it.uninafoodlab.domain.Chef;
 import it.uninafoodlab.domain.Corso;
 import it.uninafoodlab.gui.HomePanel;
+import it.uninafoodlab.gui.LoginPanel;
 import it.uninafoodlab.gui.MainFrame;
 
 
@@ -19,25 +20,23 @@ public class AuthController {
     private final CorsoDao corsoDao;
     private final MainFrame frame;
     private final HomePanel homePanel;
+    private final LoginPanel loginPanel;
 
     public AuthController(ChefDao chefDao, CorsoDao corsoDao,
-                          MainFrame frame, HomePanel homePanel) {
+                          MainFrame frame, HomePanel homePanel, LoginPanel loginPanel) {
         this.chefDao = chefDao;
         this.corsoDao = corsoDao;
         this.frame = frame;
         this.homePanel = homePanel;
+        this.loginPanel = loginPanel;
     }
 
     public void login(String email, String password) {
         Chef chef = chefDao.findByEmailAndPassword(email, password);
 
         if (chef == null) {
-            JOptionPane.showMessageDialog(
-                    null,
-                    "Email o password non corrette",
-                    "Errore",
-                    JOptionPane.ERROR_MESSAGE
-            );
+        	loginPanel.showInvalidCredentials();
+            loginPanel.clearFields();
             return;
         }
 
