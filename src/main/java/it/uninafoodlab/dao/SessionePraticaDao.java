@@ -63,4 +63,75 @@ public class SessionePraticaDao {
 
         return sessioni;
     }
+    
+    
+    public int insert(SessionePratica sessione) {
+        String sql = """
+            INSERT INTO SessionePratica (Data, Durata, Luogo, ID_Corso)
+            VALUES (?, ?, ?, ?)
+        """;
+        
+        try (Connection conn = DbConnectionFactory.openConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
+            ps.setDate(1, java.sql.Date.valueOf(sessione.getData()));
+            ps.setInt(2, sessione.getDurata());
+            ps.setString(3, sessione.getLuogo());
+            ps.setInt(4, sessione.getIdCorso());
+            
+            ps.executeUpdate();
+            
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return -1;
+    }
+    
+    
+    public boolean update(SessionePratica sessione) {
+        String sql = """
+            UPDATE SessionePratica 
+            SET Data = ?, Durata = ?, Luogo = ?
+            WHERE ID_SessionePratica = ?
+        """;
+        
+        try (Connection conn = DbConnectionFactory.openConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setDate(1, java.sql.Date.valueOf(sessione.getData()));
+            ps.setInt(2, sessione.getDurata());
+            ps.setString(3, sessione.getLuogo());
+            ps.setInt(4, sessione.getIdSessione());
+            
+            return ps.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
+    
+    
+    public boolean delete(int idSessionePratica) {
+        String sql = "DELETE FROM SessionePratica WHERE ID_SessionePratica = ?";
+        
+        try (Connection conn = DbConnectionFactory.openConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, idSessionePratica);
+            return ps.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
 }

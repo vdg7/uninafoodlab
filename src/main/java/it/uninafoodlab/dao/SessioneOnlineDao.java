@@ -62,4 +62,75 @@ public class SessioneOnlineDao {
 
         return sessioni;
     }
+    
+    
+    public int insert(SessioneOnline sessione) {
+        String sql = """
+            INSERT INTO SessioneOnline (Data, Durata, Link, ID_Corso)
+            VALUES (?, ?, ?, ?)
+        """;
+        
+        try (Connection conn = DbConnectionFactory.openConnection();
+             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            
+            ps.setDate(1, java.sql.Date.valueOf(sessione.getData()));
+            ps.setInt(2, sessione.getDurata());
+            ps.setString(3, sessione.getLink());
+            ps.setInt(4, sessione.getIdCorso());
+            
+            ps.executeUpdate();
+            
+            ResultSet rs = ps.getGeneratedKeys();
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return -1;
+    }
+    
+    
+    public boolean update(SessioneOnline sessione) {
+        String sql = """
+            UPDATE SessioneOnline 
+            SET Data = ?, Durata = ?, Link = ?
+            WHERE ID_SessioneOnline = ?
+        """;
+        
+        try (Connection conn = DbConnectionFactory.openConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setDate(1, java.sql.Date.valueOf(sessione.getData()));
+            ps.setInt(2, sessione.getDurata());
+            ps.setString(3, sessione.getLink());
+            ps.setInt(4, sessione.getIdSessione());
+            
+            return ps.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
+    
+    
+    public boolean delete(int idSessioneOnline) {
+        String sql = "DELETE FROM SessioneOnline WHERE ID_SessioneOnline = ?";
+        
+        try (Connection conn = DbConnectionFactory.openConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            
+            ps.setInt(1, idSessioneOnline);
+            return ps.executeUpdate() > 0;
+            
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        return false;
+    }
 }
