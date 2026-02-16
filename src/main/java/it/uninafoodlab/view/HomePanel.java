@@ -20,9 +20,9 @@ public class HomePanel extends BasePanel {
 	private JPanel contentPanel;
 	private JLabel nameLabel;
 	private JLabel emailLabel;
-//	private DashboardPanel dashboardPanel;
-//	private NewCoursePanel newCoursePanel;
-//	private SessionConfigPanel sessionConfigPanel;
+	private DashboardPanel dashboardPanel;
+	private NewCoursePanel newCoursePanel;
+	private SessionConfigPanel sessionConfigPanel;
 //	private ReportPanel reportPanel;
 	
     public HomePanel() {
@@ -100,31 +100,31 @@ public class HomePanel extends BasePanel {
     	contentPanel = new JPanel(contentLayout);
     	contentPanel.setBackground(UiUtil.UNINA_GREY);
     	
-//    	dashboardPanel = new DashboardPanel();
-//    	newCoursePanel = new NewCoursePanel();
-//    	sessionConfigPanel = new SessionConfigPanel();
+    	dashboardPanel = new DashboardPanel();
+    	newCoursePanel = new NewCoursePanel();
+    	sessionConfigPanel = new SessionConfigPanel();
 //    	reportPanel = new ReportPanel();
 //    	
-//    	contentPanel.add(dashboardPanel, "DASHBOARD");
-//        contentPanel.add(newCoursePanel, "NEWCOURSES");
-//        contentPanel.add(sessionConfigPanel, "SESSIONCONFIG");
+    	contentPanel.add(dashboardPanel, "DASHBOARD");
+        contentPanel.add(newCoursePanel, "NEWCOURSES");
+        contentPanel.add(sessionConfigPanel, "SESSIONCONFIG");
 //        contentPanel.add(reportPanel, "REPORT");
 
         contentLayout.show(contentPanel, "DASHBOARD");
         add(contentPanel, BorderLayout.CENTER);
     }
     
-//    public DashboardPanel getDashboardPanel() {
-//        return dashboardPanel;
-//    }
-//    
-//    public NewCoursePanel getNewCoursePanel() {
-//        return newCoursePanel;
-//    }
-//    
-//    public SessionConfigPanel getSessionConfigPanel() {
-//        return sessionConfigPanel;
-//    }
+    public DashboardPanel getDashboardPanel() {
+        return dashboardPanel;
+    }
+    
+    public NewCoursePanel getNewCoursePanel() {
+        return newCoursePanel;
+    }
+    
+    public SessionConfigPanel getSessionConfigPanel() {
+        return sessionConfigPanel;
+    }
 //    
 //    public ReportPanel getReportPanel() {
 //        return reportPanel;
@@ -152,7 +152,7 @@ public class HomePanel extends BasePanel {
     public void showChef(Chef chef, List<Corso> corsi) {
         nameLabel.setText(chef.getNome());
         emailLabel.setText(chef.getEmail());
-//        dashboardPanel.getCoursesCard().setCourses(corsi);
+        dashboardPanel.setCorsi(corsi);
     }
 
     
