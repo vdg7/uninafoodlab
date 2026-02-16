@@ -1,36 +1,48 @@
 package it.uninafoodlab.app;
 
-import it.uninafoodlab.dao.DatabaseConnection;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+
+import com.formdev.flatlaf.FlatLightLaf;
+
+import it.uninafoodlab.controller.AuthController;
+import it.uninafoodlab.view.LoginPanel;
+import it.uninafoodlab.view.HomePanel;
+import it.uninafoodlab.view.MainFrame;
 
 /**
- * Classe principale dell'applicazione UninaFoodLab.
- * Entry point del programma.
+ * Entry point dell'applicazione UninaFoodLab.
  */
 public class Main {
-    
+
     public static void main(String[] args) {
-        System.out.println("==============================================");
-        System.out.println("   UninaFoodLab - Sistema Gestione Corsi");
-        System.out.println("==============================================\n");
-        
-        // Test connessione database
-        System.out.println("Test connessione database...");
-        boolean connected = DatabaseConnection.testConnection();
-        
-        if (connected) {
-            System.out.println("\n✓ Sistema pronto all'uso!");
+        SwingUtilities.invokeLater(() -> {
             
-            // TODO: Avviare GUI
-            // javax.swing.SwingUtilities.invokeLater(() -> {
-            //     new MainController();
-            // });
-            
-        } else {
-            System.err.println("\n✗ Impossibile avviare l'applicazione.");
-            System.err.println("  Controlla che:");
-            System.err.println("  1. MySQL sia avviato");
-            System.err.println("  2. Il database 'UninaFoodLab_App' esista");
-            System.err.println("  3. Le credenziali siano corrette");
-        }
+            //Look and Feel FlatLaf
+            try {
+                UIManager.setLookAndFeel(new FlatLightLaf());
+            } catch (Exception e) {
+                System.err.println("Impossibile impostare FlatLaf, uso default");
+            }
+
+            //Frame principale
+            MainFrame frame = new MainFrame();
+
+            //Panels
+            LoginPanel loginPanel = new LoginPanel();
+            HomePanel homePanel = new HomePanel();
+
+            //Controller
+            AuthController authController = new AuthController(frame, homePanel, loginPanel);
+
+            //evento login
+            loginPanel.setLoginAction(authController::login);
+
+            frame.addView("LOGIN", loginPanel);
+            frame.addView("HOME", homePanel);
+
+            frame.showView("LOGIN");
+            frame.setVisible(true);
+        });
     }
 }
