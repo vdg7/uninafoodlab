@@ -10,6 +10,8 @@ public class Chef {
     private String nome;
     private String email;
     private String password;
+    private int anniEsperienza;
+    private int numeroSpecializzazioni;
 
     public Chef() {}
     
@@ -31,12 +33,16 @@ public class Chef {
      * @param nome nome dello chef
      * @param email email dello chef
      * @param password password dello chef
+     * @param anniEsperienza anni di esperienza dello chef
+     * @param numeroSpecializzazioni numero di specializzazioni conseguite dallo chef
      */
-    public Chef(int idChef, String nome, String email, String password) {
+    public Chef(int idChef, String nome, String email, String password, int anniEsperienza, int numeroSpecializzazioni) {
         this.idChef = idChef;
         this.nome = nome;
         this.email = email;
         this.password = password;
+        this.anniEsperienza = anniEsperienza;
+        this.numeroSpecializzazioni = numeroSpecializzazioni;
     }
     
     // ==================== GETTERS E SETTERS ====================
@@ -73,6 +79,22 @@ public class Chef {
         this.password = password;
     }
     
+    public int getAnniEsperienza() {
+    	return anniEsperienza;
+    }
+    
+    public void setAnniEsperienza(int anniEsperienza) {
+    	this.anniEsperienza = anniEsperienza;
+    }
+    
+    public int getNumeroSpecializzazioni() {
+    	return numeroSpecializzazioni;
+    }
+    
+    public void setNumeroSpecializzazioni(int numeroSpecializzazioni) {
+    	this.numeroSpecializzazioni = numeroSpecializzazioni;
+    }
+    
     // ==================== METODI UTILITY ====================
     
     @Override
@@ -81,7 +103,10 @@ public class Chef {
                 "idChef=" + idChef +
                 ", nome='" + nome + '\'' +
                 ", email='" + email + '\'' +
+                ", anni di esperienza='" + anniEsperienza + '\'' +
+                ", specializzazioni ='" + numeroSpecializzazioni + '\'' +
                 '}';
+
     }
     
     @Override

@@ -32,7 +32,9 @@ public class ChefDAO {
                     rs.getInt("ID_Chef"),
                     rs.getString("Nome"),
                     rs.getString("Email"),
-                    rs.getString("Password")
+                    rs.getString("Password"),
+                    rs.getInt("anniEsperienza"),
+                    rs.getInt("numeroSpecializzazioni")
                 );
             }
             
@@ -61,10 +63,12 @@ public class ChefDAO {
             
             if (rs.next()) {
                 return new Chef(
-                    rs.getInt("ID_Chef"),
-                    rs.getString("Nome"),
-                    rs.getString("Email"),
-                    rs.getString("Password")
+                		rs.getInt("ID_Chef"),
+                        rs.getString("Nome"),
+                        rs.getString("Email"),
+                        rs.getString("Password"),
+                        rs.getInt("anniEsperienza"),
+                        rs.getInt("numeroSpecializzazioni")
                 );
             }
             
