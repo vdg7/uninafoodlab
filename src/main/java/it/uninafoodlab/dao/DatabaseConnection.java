@@ -8,12 +8,12 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 public class DatabaseConnection {
-    
+
     private static Connection connection = null;
     private static Properties dbProperties = null;
-    
+
     private DatabaseConnection() {}
-    
+
     /**
      * Carica le proprietà dal file db.properties
      */
@@ -23,80 +23,83 @@ public class DatabaseConnection {
             try (InputStream input = DatabaseConnection.class
                     .getClassLoader()
                     .getResourceAsStream("db.properties")) {
-                
+
                 if (input == null) {
-                    System.err.println("✗ File db.properties non trovato!");
+                    System.err.println("File db.properties non trovato!");
                     return null;
                 }
-                
+
                 dbProperties.load(input);
-                System.out.println("✓ Configurazione database caricata");
-                
+                System.out.println("Configurazione database caricata");
+
             } catch (IOException e) {
-                System.err.println("✗ Errore caricamento db.properties");
+                System.err.println("Errore caricamento db.properties");
                 e.printStackTrace();
                 return null;
             }
         }
         return dbProperties;
     }
-    
+
     public static Connection getConnection() {
         try {
             if (connection == null || connection.isClosed()) {
                 Properties props = loadProperties();
-                
-                if (props == null) {
-                    // Fallback a valori hardcoded
-                    connection = DriverManager.getConnection(
-                        "jdbc:mysql://localhost:3306/UninaFoodLab_App",
-                        "root",
-                        ""
-                    );
+
+                String url = "jdbc:postgresql://localhost:5432/uninafoodlab_app";
+                String user = "postgres";
+                String password = "";
+
+                if (props != null) {
+                    url = props.getProperty("db.url", url);
+                    user = props.getProperty("db.user", user);
+                    password = props.getProperty("db.password", password);
+
+                    Class.forName(props.getProperty("db.driver", "org.postgresql.Driver"));
                 } else {
-                    String url = props.getProperty("db.url");
-                    String user = props.getProperty("db.user");
-                    String password = props.getProperty("db.password");
-                    
-                    Class.forName(props.getProperty("db.driver"));
-                    connection = DriverManager.getConnection(url, user, password);
+                    // Se il file properties non esiste, carica comunque il driver PostgreSQL
+                    Class.forName("org.postgresql.Driver");
                 }
-                
-                System.out.println("✓ Connessione al database stabilita");
+
+                connection = DriverManager.getConnection(url, user, password);
+                System.out.println("Connessione al database stabilita");
             }
-            
+
             return connection;
-            
-        } catch (ClassNotFoundException | SQLException e) {
-            System.err.println("✗ Errore connessione database");
+
+        } catch (ClassNotFoundException e) {
+            System.err.println("Driver PostgreSQL non trovato!");
+            e.printStackTrace();
+            return null;
+        } catch (SQLException e) {
+            System.err.println("Errore connessione database");
             e.printStackTrace();
             return null;
         }
     }
-    
+
     public static void closeConnection() {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
-                System.out.println("✓ Connessione chiusa");
+                System.out.println("Connessione chiusa");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-    
+
     public static boolean testConnection() {
         Connection conn = getConnection();
         if (conn != null) {
-            try {
-                var stmt = conn.createStatement();
-                var rs = stmt.executeQuery("SELECT 1");
+            try (var stmt = conn.createStatement();
+                 var rs = stmt.executeQuery("SELECT 1")) {
                 if (rs.next()) {
-                    System.out.println("✓ Test connessione riuscito!");
+                    System.out.println("Test connessione riuscito!");
                     return true;
                 }
             } catch (SQLException e) {
-                System.err.println("✗ Test connessione fallito!");
+                System.err.println("Test connessione fallito!");
                 e.printStackTrace();
             }
         }
