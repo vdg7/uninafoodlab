@@ -104,7 +104,7 @@ public class Chef {
                 ", nome='" + nome + '\'' +
                 ", email='" + email + '\'' +
                 ", anni di esperienza='" + anniEsperienza + '\'' +
-                ", specializzazioni ='" + numeroSpecializzazioni + '\'' +
+                ", specializzazioni ='" + numeroSpecializzazioni +
                 '}';
 
     }

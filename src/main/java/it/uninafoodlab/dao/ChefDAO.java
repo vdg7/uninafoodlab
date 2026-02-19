@@ -4,8 +4,8 @@ import it.uninafoodlab.model.domain.Chef;
 import java.sql.*;
 
 /**
- * Data Access Object per la gestione degli Chef nel database.
- * Fornisce metodi per operazioni CRUD e autenticazione.
+ * Data Access Object per la gestione dei Chef nel database PostgreSQL.
+ * Fornisce metodi per autenticazione e recupero informazioni chef.
  */
 public class ChefDAO {
     
@@ -14,7 +14,7 @@ public class ChefDAO {
      * 
      * @param email email dello chef
      * @param password password dello chef
-     * @return oggetto Chef se autenticazione riuscita, null altrimenti
+     * @return oggetto Chef se le credenziali sono corrette, null altrimenti
      */
     public static Chef login(String email, String password) {
         String sql = "SELECT * FROM Chef WHERE Email = ? AND Password = ?";
@@ -28,18 +28,11 @@ public class ChefDAO {
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
-                return new Chef(
-                    rs.getInt("ID_Chef"),
-                    rs.getString("Nome"),
-                    rs.getString("Email"),
-                    rs.getString("Password"),
-                    rs.getInt("anniEsperienza"),
-                    rs.getInt("numeroSpecializzazioni")
-                );
+                return createChefFromResultSet(rs);
             }
             
         } catch (SQLException e) {
-            System.err.println("Errore durante il login: " + e.getMessage());
+            System.err.println("Errore login chef: " + e.getMessage());
             e.printStackTrace();
         }
         
@@ -47,9 +40,9 @@ public class ChefDAO {
     }
     
     /**
-     * Ottiene uno chef tramite ID.
+     * Ottiene un chef tramite ID.
      * 
-     * @param idChef ID dello chef
+     * @param idChef ID dello chef da recuperare
      * @return oggetto Chef se trovato, null altrimenti
      */
     public static Chef getById(int idChef) {
@@ -62,14 +55,7 @@ public class ChefDAO {
             ResultSet rs = ps.executeQuery();
             
             if (rs.next()) {
-                return new Chef(
-                		rs.getInt("ID_Chef"),
-                        rs.getString("Nome"),
-                        rs.getString("Email"),
-                        rs.getString("Password"),
-                        rs.getInt("anniEsperienza"),
-                        rs.getInt("numeroSpecializzazioni")
-                );
+                return createChefFromResultSet(rs);
             }
             
         } catch (SQLException e) {
@@ -105,5 +91,23 @@ public class ChefDAO {
         }
         
         return false;
+    }
+    
+    /**
+     * Crea un oggetto Chef da un ResultSet.
+     * 
+     * @param rs ResultSet contenente i dati dello chef
+     * @return oggetto Chef creato
+     * @throws SQLException se si verifica un errore nel recupero dei dati
+     */
+    private static Chef createChefFromResultSet(ResultSet rs) throws SQLException {
+        return new Chef(
+            rs.getInt("ID_Chef"),
+            rs.getString("Nome"),
+            rs.getString("Email"),
+            rs.getString("Password"),
+            rs.getInt("AnniEsperienza"),
+            rs.getInt("NumeroSpecializzazioni")
+        );
     }
 }
