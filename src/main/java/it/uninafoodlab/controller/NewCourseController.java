@@ -1,23 +1,20 @@
 package it.uninafoodlab.controller;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import it.uninafoodlab.app.AppSession;
-import it.uninafoodlab.dao.CorsoDAO;
-import it.uninafoodlab.dao.RicettaDAO;
-import it.uninafoodlab.dao.SessioneOnlineDAO;
-import it.uninafoodlab.dao.SessionePraticaDAO;
-import it.uninafoodlab.model.domain.Corso;
-import it.uninafoodlab.model.domain.Ricetta;
-import it.uninafoodlab.model.domain.SessioneOnline;
-import it.uninafoodlab.model.domain.SessionePratica;
+import it.uninafoodlab.dao.*;
+import it.uninafoodlab.model.domain.*;
+import it.uninafoodlab.view.IngredienteSelectionDialog.IngredienteQuantita;
 import it.uninafoodlab.view.NewCoursePanel.CourseData;
-import it.uninafoodlab.view.SessionConfigPanel.RicettaInput;
+import it.uninafoodlab.view.RicetteConfigDialog.RicettaData;
 import it.uninafoodlab.view.SessionConfigPanel.SessionData;
 import it.uninafoodlab.view.SessionConfigPanel.SessionType;
 
 /**
  * Controller per la creazione di nuovi corsi.
+ * AGGIORNATO per gestire ingredienti separati.
  */
 public class NewCourseController {
     
@@ -25,6 +22,8 @@ public class NewCourseController {
     
     /**
      * Step 1: Salva i dati del corso temporaneamente.
+     * 
+     * @param courseData dati del corso
      */
     public void startCourseCreation(CourseData courseData) {
         this.tempCourseData = courseData;
@@ -32,6 +31,9 @@ public class NewCourseController {
     
     /**
      * Step 2: Conferma e salva il corso con le sessioni dettagliate.
+     * 
+     * @param sessionsData dati delle sessioni con ricette e ingredienti
+     * @return true se salvataggio riuscito, false altrimenti
      */
     public boolean confirmCourseWithSessions(List<SessionData> sessionsData) {
         if (tempCourseData == null) {
@@ -52,6 +54,7 @@ public class NewCourseController {
             int idCorso = CorsoDAO.insert(nuovoCorso);
             
             if (idCorso == -1) {
+                System.err.println("Errore creazione corso");
                 return false;
             }
             
@@ -78,15 +81,41 @@ public class NewCourseController {
                     );
                     int idSessionePratica = SessionePraticaDAO.insert(sessione);
                     
-                    // Aggiungi ricette se presenti
+                    if (idSessionePratica == -1) {
+                        System.err.println("Errore creazione sessione pratica");
+                        continue;
+                    }
+                    
+                    // 3. Crea le ricette con ingredienti
                     if (sessionData.getRicette() != null && !sessionData.getRicette().isEmpty()) {
-                        for (RicettaInput ricettaInput : sessionData.getRicette()) {
+                        for (RicettaData ricettaData : sessionData.getRicette()) {
+                            // 3a. Crea la ricetta (solo nome)
                             Ricetta ricetta = new Ricetta(
-                                ricettaInput.getNome(),
-                                ricettaInput.getIngredienti(),
+                                ricettaData.getNome(),
                                 idSessionePratica
                             );
-                            RicettaDAO.insert(ricetta);
+                            int idRicetta = RicettaDAO.insert(ricetta);
+                            
+                            if (idRicetta == -1) {
+                                System.err.println("Errore creazione ricetta: " + ricettaData.getNome());
+                                continue;
+                            }
+                            
+                            // 3b. Associa gli ingredienti alla ricetta
+                            for (IngredienteQuantita iq : ricettaData.getIngredienti()) {
+                                RicettaIngrediente ri = new RicettaIngrediente(
+                                    idRicetta,
+                                    iq.getIngrediente().getIdIngrediente(),
+                                    iq.getQuantita()
+                                );
+                                
+                                boolean success = RicettaIngredienteDAO.insert(ri);
+                                if (!success) {
+                                    System.err.println("Errore aggiunta ingrediente: " + 
+                                                     iq.getIngrediente().getNome() + 
+                                                     " alla ricetta " + ricettaData.getNome());
+                                }
+                            }
                         }
                     }
                 }
@@ -97,6 +126,7 @@ public class NewCourseController {
             return true;
             
         } catch (Exception e) {
+            System.err.println("Errore durante creazione corso:");
             e.printStackTrace();
             return false;
         }
