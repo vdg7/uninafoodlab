@@ -165,7 +165,7 @@ public class SessionConfigPanel extends BasePanel {
         
         // Campi Pratica
         private JTextField luogoField;
-        private List<RicettaInput> ricetteConfigurate;
+        private List<RicetteConfigDialog.RicettaData> ricetteConfigurate;
         
         // Panel dinamici
         private JPanel onlinePanel;
@@ -316,7 +316,7 @@ public class SessionConfigPanel extends BasePanel {
             configRicetteBtn.setFocusPainted(false);
             
             // Lista ricette configurate (temporanea)
-            List<RicettaInput> ricetteConfigurate = new ArrayList<>();
+            List<RicetteConfigDialog.RicettaData> ricetteConfigurate = new ArrayList<>();
             
             configRicetteBtn.addActionListener(e -> {
                 int numRicette = (Integer) numRicetteSpinner.getValue();
@@ -332,7 +332,7 @@ public class SessionConfigPanel extends BasePanel {
                     ricetteConfigurate
                 );
                 
-                List<RicettaInput> risultato = dialog.showDialog();
+                List<RicetteConfigDialog.RicettaData> risultato = dialog.showDialog();
                 if (risultato != null) {
                     ricetteConfigurate.clear();
                     ricetteConfigurate.addAll(risultato);
@@ -386,8 +386,8 @@ public class SessionConfigPanel extends BasePanel {
                     return null;
                 }
                 
-                // ✅ USA la lista configurata invece del TextArea
-                List<RicettaInput> ricette = new ArrayList<>(ricetteConfigurate);
+                // ✅ USA la lista configurata di RicettaData
+                List<RicetteConfigDialog.RicettaData> ricette = new ArrayList<>(ricetteConfigurate);
                 
                 return new SessionData(SessionType.PRATICA, sessionDate, null, luogo, ricette);
             }
@@ -405,10 +405,10 @@ public class SessionConfigPanel extends BasePanel {
         private final LocalDate data;
         private final String link;          // Per Online
         private final String luogo;         // Per Pratica
-        private final List<RicettaInput> ricette;  // Per Pratica
+        private final List<RicetteConfigDialog.RicettaData> ricette;  // Per Pratica
         
         public SessionData(SessionType type, LocalDate data, String link, 
-                          String luogo, List<RicettaInput> ricette) {
+                          String luogo, List<RicetteConfigDialog.RicettaData> ricette) {
             this.type = type;
             this.data = data;
             this.link = link;
@@ -420,19 +420,6 @@ public class SessionConfigPanel extends BasePanel {
         public LocalDate getData() { return data; }
         public String getLink() { return link; }
         public String getLuogo() { return luogo; }
-        public List<RicettaInput> getRicette() { return ricette; }
-    }
-    
-    public static class RicettaInput {
-        private final String nome;
-        private final String ingredienti;
-        
-        public RicettaInput(String nome, String ingredienti) {
-            this.nome = nome;
-            this.ingredienti = ingredienti;
-        }
-        
-        public String getNome() { return nome; }
-        public String getIngredienti() { return ingredienti; }
+        public List<RicetteConfigDialog.RicettaData> getRicette() { return ricette; }
     }
 }
