@@ -6,33 +6,30 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Data Access Object per la gestione delle Ricette nel database.
+ * Data Access Object per la gestione delle Ricette nel database PostgreSQL.
+ * Le ricette non contengono più ingredienti testuali, ma riferimenti alla tabella Ingrediente.
  */
 public class RicettaDAO {
     
     /**
-     * Inserisce una nuova ricetta nel database.
+     * Inserisce una nuova ricetta nel database (solo nome).
      * 
      * @param ricetta oggetto Ricetta da inserire
      * @return ID della ricetta inserita, -1 in caso di errore
      */
     public static int insert(Ricetta ricetta) {
-        String sql = "INSERT INTO Ricetta (Nome, Ingredienti, ID_SessionePratica) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO Ricetta (Nome, ID_SessionePratica) VALUES (?, ?) RETURNING ID_Ricetta";
         
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             
             ps.setString(1, ricetta.getNome());
-            ps.setString(2, ricetta.getIngredienti());
-            ps.setInt(3, ricetta.getIdSessionePratica());
+            ps.setInt(2, ricetta.getIdSessionePratica());
             
-            int affectedRows = ps.executeUpdate();
+            ResultSet rs = ps.executeQuery();
             
-            if (affectedRows > 0) {
-                ResultSet generatedKeys = ps.getGeneratedKeys();
-                if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);
-                }
+            if (rs.next()) {
+                return rs.getInt(1);
             }
             
         } catch (SQLException e) {
@@ -129,20 +126,36 @@ public class RicettaDAO {
     }
     
     /**
-     * Aggiorna una ricetta esistente.
+     * Ottiene una ricetta con tutti i suoi ingredienti caricati.
+     * 
+     * @param idRicetta ID della ricetta
+     * @return oggetto Ricetta con lista ingredienti popolata, null se non trovata
+     */
+    public static Ricetta getByIdWithIngredienti(int idRicetta) {
+        Ricetta ricetta = getById(idRicetta);
+        
+        if (ricetta != null) {
+            // Carica gli ingredienti
+            ricetta.setIngredienti(RicettaIngredienteDAO.getByRicetta(idRicetta));
+        }
+        
+        return ricetta;
+    }
+    
+    /**
+     * Aggiorna una ricetta esistente (solo il nome).
      * 
      * @param ricetta oggetto Ricetta con i dati aggiornati
      * @return true se aggiornamento riuscito, false altrimenti
      */
     public static boolean update(Ricetta ricetta) {
-        String sql = "UPDATE Ricetta SET Nome = ?, Ingredienti = ? WHERE ID_Ricetta = ?";
+        String sql = "UPDATE Ricetta SET Nome = ? WHERE ID_Ricetta = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             ps.setString(1, ricetta.getNome());
-            ps.setString(2, ricetta.getIngredienti());
-            ps.setInt(3, ricetta.getIdRicetta());
+            ps.setInt(2, ricetta.getIdRicetta());
             
             return ps.executeUpdate() > 0;
             
@@ -156,6 +169,7 @@ public class RicettaDAO {
     
     /**
      * Elimina una ricetta dal database.
+     * NOTA: Elimina automaticamente anche i record in Ricetta_Ingrediente (CASCADE).
      * 
      * @param idRicetta ID della ricetta da eliminare
      * @return true se eliminazione riuscita, false altrimenti
@@ -206,12 +220,15 @@ public class RicettaDAO {
     
     /**
      * Crea un oggetto Ricetta da un ResultSet.
+     * 
+     * @param rs ResultSet contenente i dati della ricetta
+     * @return oggetto Ricetta creato
+     * @throws SQLException se si verifica un errore nel recupero dei dati
      */
     private static Ricetta createRicettaFromResultSet(ResultSet rs) throws SQLException {
         return new Ricetta(
             rs.getInt("ID_Ricetta"),
             rs.getString("Nome"),
-            rs.getString("Ingredienti"),
             rs.getInt("ID_SessionePratica")
         );
     }
