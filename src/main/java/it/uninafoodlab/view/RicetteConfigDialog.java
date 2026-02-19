@@ -1,23 +1,26 @@
 package it.uninafoodlab.view;
 
 import java.awt.*;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.*;
 
-import it.uninafoodlab.view.SessionConfigPanel.RicettaInput;
+import it.uninafoodlab.model.domain.Ingrediente;
+import it.uninafoodlab.view.IngredienteSelectionDialog.IngredienteQuantita;
 
 /**
  * Dialog modale per configurare le ricette di una sessione pratica.
+ * AGGIORNATO per usare ingredienti separati dal database.
  */
 public class RicetteConfigDialog extends JDialog {
     
-    private List<RicettaInput> ricette;
+    private List<RicettaData> ricette;
     private List<RicettaRow> ricetteRows;
     private boolean confirmed;
     
-    public RicetteConfigDialog(JFrame parent, int numRicette, List<RicettaInput> ricetteEsistenti) {
+    public RicetteConfigDialog(JFrame parent, int numRicette, List<RicettaData> ricetteEsistenti) {
         super(parent, "Configura Ricette", true);
         this.ricette = new ArrayList<>(ricetteEsistenti);
         this.ricetteRows = new ArrayList<>();
@@ -49,8 +52,7 @@ public class RicetteConfigDialog extends JDialog {
         ricettePanel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
         
         for (int i = 0; i < numRicette; i++) {
-            // Pre-popola se esistono già
-            RicettaInput existing = i < ricette.size() ? ricette.get(i) : null;
+            RicettaData existing = i < ricette.size() ? ricette.get(i) : null;
             
             RicettaRow row = new RicettaRow(i + 1, existing);
             ricetteRows.add(row);
@@ -91,41 +93,34 @@ public class RicetteConfigDialog extends JDialog {
         add(buttonPanel, BorderLayout.SOUTH);
         
         // Impostazioni finestra
-        setSize(700, 600);
+        setSize(800, 600);
         setLocationRelativeTo(getParent());
     }
     
-    /**
-     * Gestisce la conferma delle ricette.
-     */
     private void handleConferma() {
         ricette.clear();
         
         for (RicettaRow row : ricetteRows) {
             String nome = row.getNomeField().getText().trim();
-            String ingredienti = row.getIngredientiArea().getText().trim();
             
-            if (nome.isEmpty() || ingredienti.isEmpty()) {
-                JOptionPane.showMessageDialog(
-                    this,
-                    "Compila tutti i campi per ogni ricetta",
-                    "Errore",
-                    JOptionPane.ERROR_MESSAGE
-                );
+            if (nome.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Inserisci il nome per ogni ricetta", "Errore", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             
-            ricette.add(new RicettaInput(nome, ingredienti));
+            if (row.getIngredienti().isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Aggiungi almeno un ingrediente per ogni ricetta", "Errore", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            ricette.add(new RicettaData(nome, row.getIngredienti()));
         }
         
         confirmed = true;
         dispose();
     }
     
-    /**
-     * Mostra il dialog e ritorna le ricette configurate.
-     */
-    public List<RicettaInput> showDialog() {
+    public List<RicettaData> showDialog() {
         setVisible(true);
         return confirmed ? ricette : null;
     }
@@ -135,92 +130,151 @@ public class RicetteConfigDialog extends JDialog {
     private class RicettaRow {
         private JPanel panel;
         private JTextField nomeField;
-        private JTextArea ingredientiArea;
+        private List<IngredienteQuantita> ingredienti;
+        private JPanel ingredientiListPanel;
         
-        public RicettaRow(int numero, RicettaInput existing) {
+        public RicettaRow(int numero, RicettaData existing) {
+            this.ingredienti = new ArrayList<>();
             createPanel(numero, existing);
         }
         
-        private void createPanel(int numero, RicettaInput existing) {
+        private void createPanel(int numero, RicettaData existing) {
             panel = new JPanel(new BorderLayout(10, 10));
             panel.setBackground(UiUtil.CARD_LIGHT);
             panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(UiUtil.UNINA_BLUE, 1),
+                BorderFactory.createLineBorder(UiUtil.UNINA_BLUE, 2),
                 BorderFactory.createEmptyBorder(15, 15, 15, 15)
             ));
-            panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 150));
+            panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
             
             // Header
             JLabel numeroLabel = new JLabel("Ricetta " + numero);
             numeroLabel.setFont(new Font("Arial", Font.BOLD, 16));
             numeroLabel.setForeground(UiUtil.UNINA_BLUE);
             
-            // Form
-            JPanel formPanel = new JPanel(new GridBagLayout());
-            formPanel.setBackground(UiUtil.CARD_LIGHT);
+            // Form nome
+            JPanel nomePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+            nomePanel.setBackground(UiUtil.CARD_LIGHT);
             
-            GridBagConstraints gbc = new GridBagConstraints();
-            gbc.fill = GridBagConstraints.HORIZONTAL;
-            gbc.insets = new Insets(5, 0, 5, 10);
-            
-            // Nome Ricetta
-            gbc.gridx = 0;
-            gbc.gridy = 0;
-            gbc.weightx = 0.0;
             JLabel nomeLabel = new JLabel("Nome:");
             nomeLabel.setFont(new Font("Arial", Font.BOLD, 13));
-            formPanel.add(nomeLabel, gbc);
             
-            gbc.gridx = 1;
-            gbc.weightx = 1.0;
             nomeField = new JTextField(30);
             nomeField.setFont(new Font("Arial", Font.PLAIN, 13));
             if (existing != null) {
                 nomeField.setText(existing.getNome());
             }
-            formPanel.add(nomeField, gbc);
             
-            // Ingredienti
-            gbc.gridx = 0;
-            gbc.gridy = 1;
-            gbc.weightx = 0.0;
-            gbc.anchor = GridBagConstraints.NORTHWEST;
+            nomePanel.add(nomeLabel);
+            nomePanel.add(nomeField);
+            
+            // Ingredienti section
+            JPanel ingredientiPanel = new JPanel(new BorderLayout(5, 5));
+            ingredientiPanel.setBackground(UiUtil.CARD_LIGHT);
+            
             JLabel ingredientiLabel = new JLabel("Ingredienti:");
             ingredientiLabel.setFont(new Font("Arial", Font.BOLD, 13));
-            formPanel.add(ingredientiLabel, gbc);
             
-            gbc.gridx = 1;
-            gbc.weightx = 1.0;
-            gbc.fill = GridBagConstraints.BOTH;
-            ingredientiArea = new JTextArea(3, 30);
-            ingredientiArea.setLineWrap(true);
-            ingredientiArea.setWrapStyleWord(true);
-            ingredientiArea.setFont(new Font("Arial", Font.PLAIN, 13));
-            ingredientiArea.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(Color.GRAY, 1),
-                BorderFactory.createEmptyBorder(5, 5, 5, 5)
-            ));
-            if (existing != null) {
-                ingredientiArea.setText(existing.getIngredienti());
+            ingredientiListPanel = new JPanel();
+            ingredientiListPanel.setLayout(new BoxLayout(ingredientiListPanel, BoxLayout.Y_AXIS));
+            ingredientiListPanel.setBackground(Color.WHITE);
+            ingredientiListPanel.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+            
+            JScrollPane ingredientiScroll = new JScrollPane(ingredientiListPanel);
+            ingredientiScroll.setPreferredSize(new Dimension(400, 80));
+            
+            JButton aggiungiBtn = new JButton("+ Aggiungi Ingrediente");
+            aggiungiBtn.setFont(new Font("Arial", Font.BOLD, 11));
+            aggiungiBtn.setBackground(UiUtil.UNINA_BLUE);
+            aggiungiBtn.setForeground(Color.WHITE);
+            aggiungiBtn.setFocusPainted(false);
+            aggiungiBtn.addActionListener(e -> aggiungiIngrediente());
+            
+            ingredientiPanel.add(ingredientiLabel, BorderLayout.NORTH);
+            ingredientiPanel.add(ingredientiScroll, BorderLayout.CENTER);
+            ingredientiPanel.add(aggiungiBtn, BorderLayout.SOUTH);
+            
+            // Pre-popola ingredienti se esistono
+            if (existing != null && existing.getIngredienti() != null) {
+                for (IngredienteQuantita iq : existing.getIngredienti()) {
+                    ingredienti.add(iq);
+                    addIngredienteToList(iq);
+                }
             }
-            JScrollPane scrollPane = new JScrollPane(ingredientiArea);
-            scrollPane.setPreferredSize(new Dimension(300, 60));
-            formPanel.add(scrollPane, gbc);
             
-            panel.add(numeroLabel, BorderLayout.NORTH);
-            panel.add(formPanel, BorderLayout.CENTER);
+            // Assembly
+            JPanel topPanel = new JPanel(new BorderLayout(5, 5));
+            topPanel.setBackground(UiUtil.CARD_LIGHT);
+            topPanel.add(numeroLabel, BorderLayout.NORTH);
+            topPanel.add(nomePanel, BorderLayout.CENTER);
+            
+            panel.add(topPanel, BorderLayout.NORTH);
+            panel.add(ingredientiPanel, BorderLayout.CENTER);
         }
         
-        public JPanel getPanel() {
-            return panel;
+        private void aggiungiIngrediente() {
+            IngredienteSelectionDialog dialog = new IngredienteSelectionDialog(
+                (JFrame) SwingUtilities.getWindowAncestor(panel)
+            );
+            
+            IngredienteQuantita result = dialog.showDialog();
+            if (result != null) {
+                ingredienti.add(result);
+                addIngredienteToList(result);
+            }
         }
         
-        public JTextField getNomeField() {
-            return nomeField;
+        private void addIngredienteToList(IngredienteQuantita iq) {
+            JPanel itemPanel = new JPanel(new BorderLayout(5, 0));
+            itemPanel.setBackground(Color.WHITE);
+            itemPanel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
+            itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
+            
+            String text = iq.getIngrediente().getNome() + ": " + 
+                         iq.getQuantita() + " " + 
+                         iq.getIngrediente().getUnitaMisura();
+            
+            JLabel label = new JLabel(text);
+            label.setFont(new Font("Arial", Font.PLAIN, 12));
+            
+            JButton removeBtn = new JButton("✕");
+            removeBtn.setFont(new Font("Arial", Font.BOLD, 10));
+            removeBtn.setPreferredSize(new Dimension(20, 20));
+            removeBtn.setBackground(Color.RED);
+            removeBtn.setForeground(Color.WHITE);
+            removeBtn.setFocusPainted(false);
+            removeBtn.addActionListener(e -> {
+                ingredienti.remove(iq);
+                ingredientiListPanel.remove(itemPanel);
+                ingredientiListPanel.revalidate();
+                ingredientiListPanel.repaint();
+            });
+            
+            itemPanel.add(label, BorderLayout.CENTER);
+            itemPanel.add(removeBtn, BorderLayout.EAST);
+            
+            ingredientiListPanel.add(itemPanel);
+            ingredientiListPanel.revalidate();
+            ingredientiListPanel.repaint();
         }
         
-        public JTextArea getIngredientiArea() {
-            return ingredientiArea;
+        public JPanel getPanel() { return panel; }
+        public JTextField getNomeField() { return nomeField; }
+        public List<IngredienteQuantita> getIngredienti() { return ingredienti; }
+    }
+    
+    // ==================== CLASSE DATI ====================
+    
+    public static class RicettaData {
+        private String nome;
+        private List<IngredienteQuantita> ingredienti;
+        
+        public RicettaData(String nome, List<IngredienteQuantita> ingredienti) {
+            this.nome = nome;
+            this.ingredienti = ingredienti;
         }
+        
+        public String getNome() { return nome; }
+        public List<IngredienteQuantita> getIngredienti() { return ingredienti; }
     }
 }
