@@ -214,7 +214,7 @@ public class RicetteConfigDialog extends JDialog {
         
         private void aggiungiIngrediente() {
             IngredienteSelectionDialog dialog = new IngredienteSelectionDialog(
-                (JFrame) SwingUtilities.getWindowAncestor(panel)
+                SwingUtilities.getWindowAncestor(panel)
             );
             
             IngredienteQuantita result = dialog.showDialog();

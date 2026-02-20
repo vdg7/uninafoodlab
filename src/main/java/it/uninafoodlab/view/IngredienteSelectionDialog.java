@@ -42,8 +42,8 @@ public class IngredienteSelectionDialog extends JDialog {
         }
     }
     
-    public IngredienteSelectionDialog(JFrame parent) {
-        super(parent, "Seleziona Ingrediente", true);
+    public IngredienteSelectionDialog(Window parent) {
+    	super(parent, "Seleziona Ingrediente", Dialog.ModalityType.APPLICATION_MODAL);
         this.confirmed = false;
         initDialog();
     }
