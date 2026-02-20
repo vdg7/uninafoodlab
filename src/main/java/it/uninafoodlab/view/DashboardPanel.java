@@ -2,10 +2,18 @@ package it.uninafoodlab.view;
 
 import java.awt.*;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import javax.swing.*;
 
+import it.uninafoodlab.dao.RicettaDAO;
+import it.uninafoodlab.dao.RicettaIngredienteDAO;
+import it.uninafoodlab.dao.SessioneOnlineDAO;
+import it.uninafoodlab.dao.SessionePraticaDAO;
 import it.uninafoodlab.model.domain.Corso;
+import it.uninafoodlab.model.domain.Ricetta;
+import it.uninafoodlab.model.domain.SessioneOnline;
+import it.uninafoodlab.model.domain.SessionePratica;
 import it.uninafoodlab.model.enums.Categoria;
 
 /**
@@ -16,6 +24,7 @@ public class DashboardPanel extends BasePanel {
     private JComboBox<String> categoriaFilter;
     private JPanel corsiContainer;
     private List<Corso> allCorsi;
+    private Consumer<Corso> onDettagliAction;
     
     public DashboardPanel() {
         setLayout(new BorderLayout(10, 10));
@@ -140,6 +149,19 @@ public class DashboardPanel extends BasePanel {
     }
     
     /**
+     * Imposta l'azione da eseguire quando si clicca su "Vedi Dettagli".
+     * 
+     * @param action callback che riceve il corso selezionato
+     */
+    public void setDettagliAction(Consumer<Corso> action) {
+        this.onDettagliAction = action;
+        
+        if(allCorsi != null && !allCorsi.isEmpty()) {
+        	applyFilter();
+        }
+    }
+    
+    /**
      * Crea una card per un corso.
      */
     private JPanel createCorsoCard(Corso corso) {
@@ -181,6 +203,15 @@ public class DashboardPanel extends BasePanel {
         dettagliBtn.setFocusPainted(false);
         dettagliBtn.addActionListener(e -> showCorsoDetails(corso));
         
+        dettagliBtn.addActionListener(e -> {
+            if (onDettagliAction != null) {
+            	System.out.println("📌 Chiamando callback per corso: " + corso.getTitolo()); //DEBUG
+                onDettagliAction.accept(corso);
+            } else {
+            	System.err.println("❌ ERRORE: Callback è null!"); //DEBUG
+            }
+        });
+        
         card.add(infoPanel, BorderLayout.CENTER);
         card.add(dettagliBtn, BorderLayout.EAST);
         
@@ -200,10 +231,24 @@ public class DashboardPanel extends BasePanel {
     }
     
     /**
-     * Mostra i dettagli del corso (TODO).
+     * Mostra i dettagli del corso.
      */
     private void showCorsoDetails(Corso corso) {
-        showWarning("Funzionalità dettaglio corso in arrivo!", "Work in Progress");
-        // TODO: Aprire DettaglioCorsoPanel
+        // Carica sessioni e ricette
+        List<SessioneOnline> sessioniOnline = SessioneOnlineDAO.getByCorso(corso.getIdCorso());
+        List<SessionePratica> sessioniPratiche = SessionePraticaDAO.getByCorso(corso.getIdCorso());
+        List<Ricetta> ricette = RicettaDAO.getByCorso(corso.getIdCorso());
+        
+        // Carica ingredienti per ogni ricetta
+        for (Ricetta ricetta : ricette) {
+            ricetta.setIngredienti(RicettaIngredienteDAO.getByRicetta(ricetta.getIdRicetta()));
+        }
+        
+        // Passa al panel dettaglio
+        HomePanel homePanel = (HomePanel) SwingUtilities.getAncestorOfClass(HomePanel.class, this);
+        if (homePanel != null) {
+            homePanel.getDettagliCorsoPanel().loadCorso(corso, sessioniOnline, sessioniPratiche, ricette);
+            homePanel.showPanel("DETTAGLIO");
+        }
     }
 }

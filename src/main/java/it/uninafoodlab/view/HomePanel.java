@@ -23,6 +23,7 @@ public class HomePanel extends BasePanel {
 	private DashboardPanel dashboardPanel;
 	private NewCoursePanel newCoursePanel;
 	private SessionConfigPanel sessionConfigPanel;
+	private DettagliCorsoPanel dettagliCorsoPanel;
 //	private ReportPanel reportPanel;
 	
     public HomePanel() {
@@ -103,11 +104,13 @@ public class HomePanel extends BasePanel {
     	dashboardPanel = new DashboardPanel();
     	newCoursePanel = new NewCoursePanel();
     	sessionConfigPanel = new SessionConfigPanel();
+    	dettagliCorsoPanel = new DettagliCorsoPanel();
 //    	reportPanel = new ReportPanel();
 //    	
     	contentPanel.add(dashboardPanel, "DASHBOARD");
         contentPanel.add(newCoursePanel, "NEWCOURSES");
         contentPanel.add(sessionConfigPanel, "SESSIONCONFIG");
+        contentPanel.add(dettagliCorsoPanel, "DETTAGLI");
 //        contentPanel.add(reportPanel, "REPORT");
 
         contentLayout.show(contentPanel, "DASHBOARD");
@@ -124,6 +127,10 @@ public class HomePanel extends BasePanel {
     
     public SessionConfigPanel getSessionConfigPanel() {
         return sessionConfigPanel;
+    }
+    
+    public DettagliCorsoPanel getDettagliCorsoPanel() {
+        return dettagliCorsoPanel;
     }
 //    
 //    public ReportPanel getReportPanel() {
