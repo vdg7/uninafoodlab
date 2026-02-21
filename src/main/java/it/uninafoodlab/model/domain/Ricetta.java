@@ -79,7 +79,7 @@ public class Ricetta {
     }
     
     public void setIngredienti(List<RicettaIngrediente> byRicetta) {
-    	 this.ingredienti = ingredienti;
+    	 this.ingredienti = byRicetta;
 	}
     
     public void addIngrediente(RicettaIngrediente ingrediente) {
