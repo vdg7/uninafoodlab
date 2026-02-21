@@ -19,6 +19,7 @@ public class HomePanel extends BasePanel {
 	private CardLayout contentLayout;
 	private JPanel contentPanel;
 	private JLabel nameLabel;
+	private JLabel specLabel;
 	private JLabel emailLabel;
 	private DashboardPanel dashboardPanel;
 	private NewCoursePanel newCoursePanel;
@@ -68,12 +69,19 @@ public class HomePanel extends BasePanel {
         emailLabel.setFont(new Font("Arial", Font.PLAIN, 16));
         emailLabel.setForeground(Color.WHITE);
         emailLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        
+        specLabel = new JLabel("Numero specializzazioni: 0");
+        specLabel.setFont(new Font("Arial", Font.PLAIN, 16));
+        specLabel.setForeground(Color.WHITE);
+        specLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         profile.add(avatar);
         profile.add(Box.createVerticalStrut(10));
         profile.add(nameLabel);
         profile.add(Box.createVerticalStrut(4));
         profile.add(emailLabel);
+        profile.add(Box.createVerticalStrut(4));
+        profile.add(specLabel);
 
         return profile;
     }
@@ -110,7 +118,7 @@ public class HomePanel extends BasePanel {
     	contentPanel.add(dashboardPanel, "DASHBOARD");
         contentPanel.add(newCoursePanel, "NEWCOURSES");
         contentPanel.add(sessionConfigPanel, "SESSIONCONFIG");
-        contentPanel.add(dettagliCorsoPanel, "DETTAGLI");
+        contentPanel.add(dettagliCorsoPanel, "DETTAGLIO");
 //        contentPanel.add(reportPanel, "REPORT");
 
         contentLayout.show(contentPanel, "DASHBOARD");
@@ -159,6 +167,7 @@ public class HomePanel extends BasePanel {
     public void showChef(Chef chef, List<Corso> corsi) {
         nameLabel.setText(chef.getNome());
         emailLabel.setText(chef.getEmail());
+        specLabel.setText("Numero specializzazioni: " + String.valueOf(chef.getNumeroSpecializzazioni()));
         dashboardPanel.setCorsi(corsi);
     }
 
