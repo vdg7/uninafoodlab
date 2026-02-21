@@ -30,7 +30,7 @@ public class DatabaseConnection {
                 }
 
                 dbProperties.load(input);
-                System.out.println("Configurazione database caricata");
+
 
             } catch (IOException e) {
                 System.err.println("Errore caricamento db.properties");
@@ -62,7 +62,6 @@ public class DatabaseConnection {
                 }
 
                 connection = DriverManager.getConnection(url, user, password);
-                System.out.println("Connessione al database stabilita");
             }
 
             return connection;
