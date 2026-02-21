@@ -68,7 +68,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>it.unina.uninafoodlab.Main</mainClass>
+                            <mainClass>it.uninafoodlab.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
