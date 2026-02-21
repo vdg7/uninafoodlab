@@ -201,14 +201,11 @@ public class DashboardPanel extends BasePanel {
         dettagliBtn.setBackground(UiUtil.UNINA_BLUE);
         dettagliBtn.setForeground(Color.WHITE);
         dettagliBtn.setFocusPainted(false);
-        dettagliBtn.addActionListener(e -> showCorsoDetails(corso));
-        
         dettagliBtn.addActionListener(e -> {
             if (onDettagliAction != null) {
-            	System.out.println("📌 Chiamando callback per corso: " + corso.getTitolo()); //DEBUG
                 onDettagliAction.accept(corso);
             } else {
-            	System.err.println("❌ ERRORE: Callback è null!"); //DEBUG
+            	System.err.println("ERRORE: Azione dettagli non configurata nel controller"); //DEBUG
             }
         });
         
@@ -228,27 +225,5 @@ public class DashboardPanel extends BasePanel {
         });
         
         return card;
-    }
-    
-    /**
-     * Mostra i dettagli del corso.
-     */
-    private void showCorsoDetails(Corso corso) {
-        // Carica sessioni e ricette
-        List<SessioneOnline> sessioniOnline = SessioneOnlineDAO.getByCorso(corso.getIdCorso());
-        List<SessionePratica> sessioniPratiche = SessionePraticaDAO.getByCorso(corso.getIdCorso());
-        List<Ricetta> ricette = RicettaDAO.getByCorso(corso.getIdCorso());
-        
-        // Carica ingredienti per ogni ricetta
-        for (Ricetta ricetta : ricette) {
-            ricetta.setIngredienti(RicettaIngredienteDAO.getByRicetta(ricetta.getIdRicetta()));
-        }
-        
-        // Passa al panel dettaglio
-        HomePanel homePanel = (HomePanel) SwingUtilities.getAncestorOfClass(HomePanel.class, this);
-        if (homePanel != null) {
-            homePanel.getDettagliCorsoPanel().loadCorso(corso, sessioniOnline, sessioniPratiche, ricette);
-            homePanel.showPanel("DETTAGLIO");
-        }
     }
 }
