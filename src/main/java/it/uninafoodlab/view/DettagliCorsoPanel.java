@@ -19,7 +19,7 @@ public class DettagliCorsoPanel extends BasePanel {
     private JLabel dataInizioLabel;
     private JLabel frequenzaLabel;
     private JLabel numSessioniLabel;
-    
+    private JPanel headerPanel;
     private JPanel sessioniContainer;
     
     public DettagliCorsoPanel() {
@@ -33,7 +33,7 @@ public class DettagliCorsoPanel extends BasePanel {
     }
     
     private void initHeader() {
-        JPanel headerPanel = new JPanel(new BorderLayout());
+        headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(UiUtil.UNINA_GREY);
         
         JLabel titleLabel = new JLabel("Dettaglio Corso");
@@ -112,6 +112,15 @@ public class DettagliCorsoPanel extends BasePanel {
         wrapperPanel.add(infoPanel);
         
         add(wrapperPanel, BorderLayout.NORTH);
+        
+        JPanel topContainer = new JPanel();
+        topContainer.setLayout(new BoxLayout(topContainer, BoxLayout.Y_AXIS));
+        topContainer.setBackground(UiUtil.UNINA_GREY);
+        
+        topContainer.add(headerPanel);
+        topContainer.add(infoPanel);
+        
+        add(topContainer, BorderLayout.NORTH);
     }
     
     private void initSessioniPanel() {
@@ -225,7 +234,7 @@ public class DettagliCorsoPanel extends BasePanel {
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setBackground(Color.WHITE);
         
-        JLabel tipoLabel = new JLabel("🌐 SESSIONE ONLINE");
+        JLabel tipoLabel = new JLabel("SESSIONE ONLINE");
         tipoLabel.setFont(new Font("Arial", Font.BOLD, 14));
         tipoLabel.setForeground(UiUtil.UNINA_BLUE);
         
@@ -261,16 +270,19 @@ public class DettagliCorsoPanel extends BasePanel {
         infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
         infoPanel.setBackground(Color.WHITE);
         
-        JLabel tipoLabel = new JLabel("👨‍🍳 SESSIONE PRATICA");
+        JLabel tipoLabel = new JLabel("SESSIONE PRATICA");
         tipoLabel.setFont(new Font("Arial", Font.BOLD, 14));
         tipoLabel.setForeground(new Color(220, 100, 50));
+        tipoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         JLabel dataLabel = new JLabel("Data: " + sessione.getData() + " | Durata: " + sessione.getDurata() + " min");
         dataLabel.setFont(new Font("Arial", Font.PLAIN, 13));
+        dataLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         JLabel luogoLabel = new JLabel("Luogo: " + sessione.getLuogo());
         luogoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         luogoLabel.setForeground(Color.GRAY);
+        luogoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         infoPanel.add(tipoLabel);
         infoPanel.add(Box.createVerticalStrut(5));
@@ -282,14 +294,17 @@ public class DettagliCorsoPanel extends BasePanel {
         if (!ricette.isEmpty()) {
             infoPanel.add(Box.createVerticalStrut(10));
             
-            JLabel ricetteLabel = new JLabel("📝 Ricette (" + ricette.size() + "):");
+            JLabel ricetteLabel = new JLabel("Ricette (" + ricette.size() + "):");
             ricetteLabel.setFont(new Font("Arial", Font.BOLD, 13));
             ricetteLabel.setForeground(UiUtil.UNINA_BLUE);
+            ricetteLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             infoPanel.add(ricetteLabel);
             
             for (Ricetta ricetta : ricette) {
                 infoPanel.add(Box.createVerticalStrut(5));
-                infoPanel.add(createRicettaPanel(ricetta));
+                JPanel ricettaCard = createRicettaPanel(ricetta);
+                ricettaCard.setAlignmentX(Component.LEFT_ALIGNMENT);
+                infoPanel.add(ricettaCard);
             }
         } else {
             infoPanel.add(Box.createVerticalStrut(5));
@@ -315,15 +330,18 @@ public class DettagliCorsoPanel extends BasePanel {
         
         JLabel nomeLabel = new JLabel("• " + ricetta.getNome());
         nomeLabel.setFont(new Font("Arial", Font.BOLD, 13));
+        nomeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         
         // Ingredienti
         if (!ricetta.getIngredienti().isEmpty()) {
             JPanel ingredientiPanel = new JPanel();
             ingredientiPanel.setLayout(new BoxLayout(ingredientiPanel, BoxLayout.Y_AXIS));
             ingredientiPanel.setBackground(UiUtil.CARD_LIGHT);
+            ingredientiPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
             
             JLabel ingredientiLabel = new JLabel("Ingredienti:");
             ingredientiLabel.setFont(new Font("Arial", Font.ITALIC, 11));
+            ingredientiLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
             ingredientiLabel.setForeground(Color.DARK_GRAY);
             ingredientiPanel.add(ingredientiLabel);
             
