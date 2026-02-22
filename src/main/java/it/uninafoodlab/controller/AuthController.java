@@ -53,6 +53,18 @@ public class AuthController {
         frame.showView("HOME");
     }
     
+    
+    /**
+     * Esegue il logout: pulisce la sessione, torna alla login in finestra normale.
+     */
+    public void logout() {
+        AppSession.getInstance().clear();
+        // Torna alla dimensione originale (non fullscreen)
+        frame.goLoginSize();
+        frame.showView("LOGIN");
+        loginPanel.clearFields();
+    }
+    
     /**
      * Ricarica la dashboard (dopo creazione nuovo corso).
      */

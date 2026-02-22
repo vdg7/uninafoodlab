@@ -50,8 +50,7 @@ public class MainFrame extends JFrame{
         layout.show(container, name);
     }
     
-    private void goLoginSize() {
-        setUndecorated(false);
+    public void goLoginSize() {
         setResizable(false);
         setSize(600, 400);
         setLocationRelativeTo(null);
