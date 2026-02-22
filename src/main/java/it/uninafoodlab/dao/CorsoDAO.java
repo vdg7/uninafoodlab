@@ -20,13 +20,13 @@ public class CorsoDAO {
      */
     public static int insert(Corso corso) {
         String sql = "INSERT INTO Corso (Titolo, Categoria, DataInizio, Frequenza, NumeroSessioni, ID_Chef) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
+                     "VALUES (?, ?::categoria_enum, ?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
             ps.setString(1, corso.getTitolo());
-            ps.setString(2, corso.getCategoria().getDisplayName());
+            ps.setString(2, corso.getCategoria().name());
             ps.setDate(3, Date.valueOf(corso.getDataInizio()));
             ps.setInt(4, corso.getFrequenza());
             ps.setInt(5, corso.getNumeroSessioni());
@@ -86,13 +86,13 @@ public class CorsoDAO {
      */
     public static List<Corso> getByChefAndCategoria(int idChef, Categoria categoria) {
         List<Corso> corsi = new ArrayList<>();
-        String sql = "SELECT * FROM Corso WHERE ID_Chef = ? AND Categoria = ? ORDER BY DataInizio DESC";
+        String sql = "SELECT * FROM Corso WHERE ID_Chef = ? AND Categoria = ?::categoria_enum ORDER BY DataInizio DESC";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             ps.setInt(1, idChef);
-            ps.setString(2, categoria.getDisplayName());
+            ps.setString(2, categoria.name());
             ResultSet rs = ps.executeQuery();
             
             while (rs.next()) {
@@ -141,14 +141,14 @@ public class CorsoDAO {
      * @return true se aggiornamento riuscito, false altrimenti
      */
     public static boolean update(Corso corso) {
-        String sql = "UPDATE Corso SET Titolo = ?, Categoria = ?, DataInizio = ?, " +
+        String sql = "UPDATE Corso SET Titolo = ?, Categoria = ?::categoria_enum, DataInizio = ?, " +
                      "Frequenza = ?, NumeroSessioni = ? WHERE ID_Corso = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             ps.setString(1, corso.getTitolo());
-            ps.setString(2, corso.getCategoria().getDisplayName());
+            ps.setString(2, corso.getCategoria().name());
             ps.setDate(3, Date.valueOf(corso.getDataInizio()));
             ps.setInt(4, corso.getFrequenza());
             ps.setInt(5, corso.getNumeroSessioni());
