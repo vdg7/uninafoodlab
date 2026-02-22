@@ -17,15 +17,16 @@ public class SessioneOnlineDAO {
      * @return ID della sessione inserita, -1 in caso di errore
      */
     public static int insert(SessioneOnline sessione) {
-        String sql = "INSERT INTO SessioneOnline (Data, Durata, Link, ID_Corso) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO SessioneOnline (Data, Ora, Durata, Link, ID_Corso) VALUES (?, ?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
             ps.setDate(1, Date.valueOf(sessione.getData()));
-            ps.setInt(2, sessione.getDurata());
-            ps.setString(3, sessione.getLink());
-            ps.setInt(4, sessione.getIdCorso());
+            ps.setTime(2, sessione.getOra() != null ? Time.valueOf(sessione.getOra()) : null);
+            ps.setInt(3, sessione.getDurata());
+            ps.setString(4, sessione.getLink());
+            ps.setInt(5, sessione.getIdCorso());
             
             int affectedRows = ps.executeUpdate();
             
@@ -51,15 +52,16 @@ public class SessioneOnlineDAO {
      * @return true se aggiornamento riuscito, false altrimenti
      */
     public static boolean update(SessioneOnline sessione) {
-        String sql = "UPDATE SessioneOnline SET Data = ?, Durata = ?, Link = ? WHERE ID_SessioneOnline = ?";
+        String sql = "UPDATE SessioneOnline SET Data = ?, Ora = ?, Durata = ?, Link = ? WHERE ID_SessioneOnline = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             ps.setDate(1, Date.valueOf(sessione.getData()));
-            ps.setInt(2, sessione.getDurata());
-            ps.setString(3, sessione.getLink());
-            ps.setInt(4, sessione.getIdSessioneOnline());
+            ps.setTime(2, sessione.getOra() != null ? Time.valueOf(sessione.getOra()) : null);
+            ps.setInt(3, sessione.getDurata());
+            ps.setString(4, sessione.getLink());
+            ps.setInt(5, sessione.getIdSessioneOnline());
             
             return ps.executeUpdate() > 0;
             
@@ -79,7 +81,7 @@ public class SessioneOnlineDAO {
      */
     public static List<SessioneOnline> getByCorso(int idCorso) {
         List<SessioneOnline> sessioni = new ArrayList<>();
-        String sql = "SELECT * FROM SessioneOnline WHERE ID_Corso = ? ORDER BY Data";
+        String sql = "SELECT * FROM SessioneOnline WHERE ID_Corso = ? ORDER BY Data, Ora";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -153,9 +155,11 @@ public class SessioneOnlineDAO {
      * Crea un oggetto SessioneOnline da un ResultSet.
      */
     private static SessioneOnline createSessioneFromResultSet(ResultSet rs) throws SQLException {
+    	Time oraSQL = rs.getTime("Ora");
         return new SessioneOnline(
             rs.getInt("ID_SessioneOnline"),
             rs.getDate("Data").toLocalDate(),
+            oraSQL != null ? oraSQL.toLocalTime() : null,
             rs.getInt("Durata"),
             rs.getString("Link"),
             rs.getInt("ID_Corso")
