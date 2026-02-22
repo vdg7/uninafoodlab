@@ -6,6 +6,8 @@ import javax.swing.UIManager;
 
 import com.formdev.flatlaf.FlatLightLaf;
 
+import it.uninafoodlab.app.AppSession;
+import it.uninafoodlab.dao.NotificaDAO;
 import it.uninafoodlab.controller.AuthController;
 import it.uninafoodlab.controller.CorsoController;
 import it.uninafoodlab.controller.NewCourseController;
@@ -33,6 +35,12 @@ public class Main {
             CorsoController     corsoController     = new CorsoController(homePanel, homePanel.getDettagliCorsoPanel());
             NewCourseController newCourseController = new NewCourseController();
             ReportController    reportController    = new ReportController(homePanel.getReportPanel());
+
+            // ── Notifiche: loader ─────────────────────────────────────────
+            homePanel.getNotificaPanel().setLoader(() -> {
+                int idChef = AppSession.getInstance().getLoggedChef().getIdChef();
+                return NotificaDAO.getByChef(idChef);
+            });
 
             // ── Logout ────────────────────────────────────────────────────
             homePanel.setLogoutAction(authController::logout);

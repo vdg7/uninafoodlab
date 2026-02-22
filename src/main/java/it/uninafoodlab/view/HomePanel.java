@@ -22,6 +22,7 @@ public class HomePanel extends BasePanel {
     private SessionConfigPanel sessionConfigPanel;
     private DettagliCorsoPanel dettagliCorsoPanel;
     private ReportPanel        reportPanel;
+    private NotificaPanel      notificaPanel;
 
     // Callback iniettato da Main / AuthController
     private Runnable onLogoutAction;
@@ -133,6 +134,8 @@ public class HomePanel extends BasePanel {
         nav.add(Box.createVerticalStrut(20));
         nav.add(createNavButton("Report Mensile",   "REPORT"));
         nav.add(Box.createVerticalStrut(20));
+        nav.add(createNavButton("Notifiche",           "NOTIFICHE"));
+        nav.add(Box.createVerticalStrut(20));
 
         return nav;
     }
@@ -145,7 +148,12 @@ public class HomePanel extends BasePanel {
         btn.setBackground(UiUtil.UNINA_BLUE.darker());
         btn.setForeground(Color.WHITE);
         btn.setFont(new Font("Arial", Font.PLAIN, 14));
-        btn.addActionListener(e -> contentLayout.show(contentPanel, viewName));
+        btn.addActionListener(e -> {
+            if ("NOTIFICHE".equals(viewName) && notificaPanel != null) {
+                notificaPanel.refresh();
+            }
+            contentLayout.show(contentPanel, viewName);
+        });
         return btn;
     }
 
@@ -161,12 +169,14 @@ public class HomePanel extends BasePanel {
         sessionConfigPanel = new SessionConfigPanel();
         dettagliCorsoPanel = new DettagliCorsoPanel();
         reportPanel        = new ReportPanel();
+        notificaPanel      = new NotificaPanel();
 
         contentPanel.add(dashboardPanel,     "DASHBOARD");
         contentPanel.add(newCoursePanel,     "NEWCOURSES");
         contentPanel.add(sessionConfigPanel, "SESSIONCONFIG");
         contentPanel.add(dettagliCorsoPanel, "DETTAGLIO");
         contentPanel.add(reportPanel,        "REPORT");
+        contentPanel.add(notificaPanel,      "NOTIFICHE");
 
         contentLayout.show(contentPanel, "DASHBOARD");
         add(contentPanel, BorderLayout.CENTER);
@@ -179,6 +189,7 @@ public class HomePanel extends BasePanel {
     public SessionConfigPanel getSessionConfigPanel() { return sessionConfigPanel; }
     public DettagliCorsoPanel getDettagliCorsoPanel() { return dettagliCorsoPanel; }
     public ReportPanel        getReportPanel()        { return reportPanel; }
+    public NotificaPanel      getNotificaPanel()      { return notificaPanel; }
 
     // ── Navigazione ──────────────────────────────────────────────────────────
 

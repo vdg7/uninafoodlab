@@ -12,7 +12,8 @@ import it.uninafoodlab.view.IngredienteSelectionDialog.IngredienteQuantita;
 
 /**
  * Dialog modale per configurare le ricette di una sessione pratica.
- * AGGIORNATO per usare ingredienti separati dal database.
+ * Costruttore aggiornato: accetta Window invece di JFrame,
+ * così funziona sia da JFrame che da JDialog annidati.
  */
 public class RicetteConfigDialog extends JDialog {
     
@@ -20,8 +21,8 @@ public class RicetteConfigDialog extends JDialog {
     private List<RicettaRow> ricetteRows;
     private boolean confirmed;
     
-    public RicetteConfigDialog(JFrame parent, int numRicette, List<RicettaData> ricetteEsistenti) {
-        super(parent, "Configura Ricette", true);
+    public RicetteConfigDialog(Window parent, int numRicette, List<RicettaData> ricetteEsistenti) {
+        super(parent, "Configura Ricette", ModalityType.APPLICATION_MODAL);
         this.ricette = new ArrayList<>(ricetteEsistenti);
         this.ricetteRows = new ArrayList<>();
         this.confirmed = false;
@@ -53,7 +54,6 @@ public class RicetteConfigDialog extends JDialog {
         
         for (int i = 0; i < numRicette; i++) {
             RicettaData existing = i < ricette.size() ? ricette.get(i) : null;
-            
             RicettaRow row = new RicettaRow(i + 1, existing);
             ricetteRows.add(row);
             ricettePanel.add(row.getPanel());
@@ -63,7 +63,6 @@ public class RicetteConfigDialog extends JDialog {
         JScrollPane scrollPane = new JScrollPane(ricettePanel);
         scrollPane.setBorder(null);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);
-        
         add(scrollPane, BorderLayout.CENTER);
         
         // Bottoni
@@ -74,10 +73,7 @@ public class RicetteConfigDialog extends JDialog {
         JButton annullaBtn = new JButton("Annulla");
         annullaBtn.setFont(new Font("Arial", Font.PLAIN, 14));
         annullaBtn.setPreferredSize(new Dimension(120, 35));
-        annullaBtn.addActionListener(e -> {
-            confirmed = false;
-            dispose();
-        });
+        annullaBtn.addActionListener(e -> { confirmed = false; dispose(); });
         
         JButton confermaBtn = new JButton("Conferma");
         confermaBtn.setFont(new Font("Arial", Font.BOLD, 14));
@@ -89,33 +85,26 @@ public class RicetteConfigDialog extends JDialog {
         
         buttonPanel.add(annullaBtn);
         buttonPanel.add(confermaBtn);
-        
         add(buttonPanel, BorderLayout.SOUTH);
         
-        // Impostazioni finestra
         setSize(800, 600);
         setLocationRelativeTo(getParent());
     }
     
     private void handleConferma() {
         ricette.clear();
-        
         for (RicettaRow row : ricetteRows) {
             String nome = row.getNomeField().getText().trim();
-            
             if (nome.isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Inserisci il nome per ogni ricetta", "Errore", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
             if (row.getIngredienti().isEmpty()) {
                 JOptionPane.showMessageDialog(this, "Aggiungi almeno un ingrediente per ogni ricetta", "Errore", JOptionPane.ERROR_MESSAGE);
                 return;
             }
-            
             ricette.add(new RicettaData(nome, row.getIngredienti()));
         }
-        
         confirmed = true;
         dispose();
     }
@@ -125,7 +114,7 @@ public class RicetteConfigDialog extends JDialog {
         return confirmed ? ricette : null;
     }
     
-    // ==================== CLASSE INTERNA: RicettaRow ====================
+    // ── RicettaRow ───────────────────────────────────────────────────────────
     
     private class RicettaRow {
         private JPanel panel;
@@ -147,31 +136,22 @@ public class RicetteConfigDialog extends JDialog {
             ));
             panel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 250));
             
-            // Header
             JLabel numeroLabel = new JLabel("Ricetta " + numero);
             numeroLabel.setFont(new Font("Arial", Font.BOLD, 16));
             numeroLabel.setForeground(UiUtil.UNINA_BLUE);
             
-            // Form nome
             JPanel nomePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
             nomePanel.setBackground(UiUtil.CARD_LIGHT);
-            
             JLabel nomeLabel = new JLabel("Nome:");
             nomeLabel.setFont(new Font("Arial", Font.BOLD, 13));
-            
             nomeField = new JTextField(30);
             nomeField.setFont(new Font("Arial", Font.PLAIN, 13));
-            if (existing != null) {
-                nomeField.setText(existing.getNome());
-            }
-            
+            if (existing != null) nomeField.setText(existing.getNome());
             nomePanel.add(nomeLabel);
             nomePanel.add(nomeField);
             
-            // Ingredienti section
             JPanel ingredientiPanel = new JPanel(new BorderLayout(5, 5));
             ingredientiPanel.setBackground(UiUtil.CARD_LIGHT);
-            
             JLabel ingredientiLabel = new JLabel("Ingredienti:");
             ingredientiLabel.setFont(new Font("Arial", Font.BOLD, 13));
             
@@ -194,7 +174,6 @@ public class RicetteConfigDialog extends JDialog {
             ingredientiPanel.add(ingredientiScroll, BorderLayout.CENTER);
             ingredientiPanel.add(aggiungiBtn, BorderLayout.SOUTH);
             
-            // Pre-popola ingredienti se esistono
             if (existing != null && existing.getIngredienti() != null) {
                 for (IngredienteQuantita iq : existing.getIngredienti()) {
                     ingredienti.add(iq);
@@ -202,13 +181,12 @@ public class RicetteConfigDialog extends JDialog {
                 }
             }
             
-            // Assembly
             JPanel topPanel = new JPanel(new BorderLayout(5, 5));
             topPanel.setBackground(UiUtil.CARD_LIGHT);
             topPanel.add(numeroLabel, BorderLayout.NORTH);
-            topPanel.add(nomePanel, BorderLayout.CENTER);
+            topPanel.add(nomePanel,   BorderLayout.CENTER);
             
-            panel.add(topPanel, BorderLayout.NORTH);
+            panel.add(topPanel,         BorderLayout.NORTH);
             panel.add(ingredientiPanel, BorderLayout.CENTER);
         }
         
@@ -216,7 +194,6 @@ public class RicetteConfigDialog extends JDialog {
             IngredienteSelectionDialog dialog = new IngredienteSelectionDialog(
                 SwingUtilities.getWindowAncestor(panel)
             );
-            
             IngredienteQuantita result = dialog.showDialog();
             if (result != null) {
                 ingredienti.add(result);
@@ -230,11 +207,8 @@ public class RicetteConfigDialog extends JDialog {
             itemPanel.setBorder(BorderFactory.createEmptyBorder(3, 5, 3, 5));
             itemPanel.setMaximumSize(new Dimension(Integer.MAX_VALUE, 25));
             
-            String text = iq.getIngrediente().getNome() + ": " + 
-                         iq.getQuantita() + " " + 
-                         iq.getIngrediente().getUnitaMisura();
-            
-            JLabel label = new JLabel(text);
+            JLabel label = new JLabel(iq.getIngrediente().getNome() + ": "
+                + iq.getQuantita() + " " + iq.getIngrediente().getUnitaMisura());
             label.setFont(new Font("Arial", Font.PLAIN, 12));
             
             JButton removeBtn = new JButton("✕");
@@ -250,31 +224,30 @@ public class RicetteConfigDialog extends JDialog {
                 ingredientiListPanel.repaint();
             });
             
-            itemPanel.add(label, BorderLayout.CENTER);
+            itemPanel.add(label,     BorderLayout.CENTER);
             itemPanel.add(removeBtn, BorderLayout.EAST);
-            
             ingredientiListPanel.add(itemPanel);
             ingredientiListPanel.revalidate();
             ingredientiListPanel.repaint();
         }
         
-        public JPanel getPanel() { return panel; }
-        public JTextField getNomeField() { return nomeField; }
+        public JPanel getPanel()             { return panel; }
+        public JTextField getNomeField()     { return nomeField; }
         public List<IngredienteQuantita> getIngredienti() { return ingredienti; }
     }
     
-    // ==================== CLASSE DATI ====================
+    // ── RicettaData ──────────────────────────────────────────────────────────
     
     public static class RicettaData {
-        private String nome;
-        private List<IngredienteQuantita> ingredienti;
+        private final String nome;
+        private final List<IngredienteQuantita> ingredienti;
         
         public RicettaData(String nome, List<IngredienteQuantita> ingredienti) {
             this.nome = nome;
             this.ingredienti = ingredienti;
         }
         
-        public String getNome() { return nome; }
+        public String getNome()                           { return nome; }
         public List<IngredienteQuantita> getIngredienti() { return ingredienti; }
     }
 }

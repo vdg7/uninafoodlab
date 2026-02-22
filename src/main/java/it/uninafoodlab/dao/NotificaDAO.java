@@ -20,7 +20,7 @@ public class NotificaDAO {
      */
     public static int insert(Notifica notifica) {
         String sql = "INSERT INTO Notifica (ID_Chef, ID_Corso, Titolo, Messaggio, TipoModifica, IsGlobale) " +
-                     "VALUES (?, ?, ?, ?, ?, ?)";
+                     "VALUES (?, ?, ?, ?, ?::tipo_modifica_enum, ?)";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
