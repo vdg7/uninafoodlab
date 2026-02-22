@@ -17,15 +17,16 @@ public class SessionePraticaDAO {
      * @return ID della sessione inserita, -1 in caso di errore
      */
     public static int insert(SessionePratica sessione) {
-        String sql = "INSERT INTO SessionePratica (Data, Durata, Luogo, ID_Corso) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO SessionePratica (Data, Ora, Durata, Luogo, ID_Corso) VALUES (?, ?, ?, ?, ?)";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             
             ps.setDate(1, Date.valueOf(sessione.getData()));
-            ps.setInt(2, sessione.getDurata());
-            ps.setString(3, sessione.getLuogo());
-            ps.setInt(4, sessione.getIdCorso());
+            ps.setTime(2, sessione.getOra() != null ? Time.valueOf(sessione.getOra()) : null);
+            ps.setInt(3, sessione.getDurata());
+            ps.setString(4, sessione.getLuogo());
+            ps.setInt(5, sessione.getIdCorso());
             
             int affectedRows = ps.executeUpdate();
             
@@ -51,15 +52,16 @@ public class SessionePraticaDAO {
      * @return true se aggiornamento riuscito, false altrimenti
      */
     public static boolean update(SessionePratica sessione) {
-        String sql = "UPDATE SessionePratica SET Data = ?, Durata = ?, Luogo = ? WHERE ID_SessionePratica = ?";
+        String sql = "UPDATE SessionePratica SET Data = ?, Ora = ?, Durata = ?, Luogo = ? WHERE ID_SessionePratica = ?";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             
             ps.setDate(1, Date.valueOf(sessione.getData()));
-            ps.setInt(2, sessione.getDurata());
-            ps.setString(3, sessione.getLuogo());
-            ps.setInt(4, sessione.getIdSessionePratica());
+            ps.setTime(2, sessione.getOra() != null ? Time.valueOf(sessione.getOra()) : null);
+            ps.setInt(3, sessione.getDurata());
+            ps.setString(4, sessione.getLuogo());
+            ps.setInt(5, sessione.getIdSessionePratica());
             
             return ps.executeUpdate() > 0;
             
@@ -79,7 +81,7 @@ public class SessionePraticaDAO {
      */
     public static List<SessionePratica> getByCorso(int idCorso) {
         List<SessionePratica> sessioni = new ArrayList<>();
-        String sql = "SELECT * FROM SessionePratica WHERE ID_Corso = ? ORDER BY Data";
+        String sql = "SELECT * FROM SessionePratica WHERE ID_Corso = ? ORDER BY Data, Ora";
         
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -153,9 +155,11 @@ public class SessionePraticaDAO {
      * Crea un oggetto SessionePratica da un ResultSet.
      */
     private static SessionePratica createSessioneFromResultSet(ResultSet rs) throws SQLException {
+    	 Time oraSQL = rs.getTime("Ora");
         return new SessionePratica(
             rs.getInt("ID_SessionePratica"),
             rs.getDate("Data").toLocalDate(),
+            oraSQL != null ? oraSQL.toLocalTime() : null,
             rs.getInt("Durata"),
             rs.getString("Luogo"),
             rs.getInt("ID_Corso")
