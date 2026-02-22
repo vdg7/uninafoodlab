@@ -14,41 +14,34 @@ import it.uninafoodlab.view.HomePanel;
 import it.uninafoodlab.view.LoginPanel;
 import it.uninafoodlab.view.MainFrame;
 
-/**
- * Entry point dell'applicazione UninaFoodLab.
- */
 public class Main {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
 
-            // Look and Feel FlatLaf
             try {
                 UIManager.setLookAndFeel(new FlatLightLaf());
             } catch (Exception e) {
                 System.err.println("Impossibile impostare FlatLaf, uso default");
             }
 
-            // Frame principale
-            MainFrame frame = new MainFrame();
-
-            // Panel
+            MainFrame  frame      = new MainFrame();
             LoginPanel loginPanel = new LoginPanel();
             HomePanel  homePanel  = new HomePanel();
 
-            // Controller
-            AuthController     authController     = new AuthController(frame, homePanel, loginPanel);
-            CorsoController    corsoController    = new CorsoController(homePanel, homePanel.getDettagliCorsoPanel());
+            AuthController      authController      = new AuthController(frame, homePanel, loginPanel);
+            CorsoController     corsoController     = new CorsoController(homePanel, homePanel.getDettagliCorsoPanel());
             NewCourseController newCourseController = new NewCourseController();
-            ReportController   reportController   = new ReportController(homePanel.getReportPanel());
+            ReportController    reportController    = new ReportController(homePanel.getReportPanel());
 
-            // ── NewCourse: passaggio a SessionConfig ──────────────────────
+            // ── Logout ────────────────────────────────────────────────────
+            homePanel.setLogoutAction(authController::logout);
+
+            // ── NewCourse → SessionConfig ─────────────────────────────────
             homePanel.getNewCoursePanel().setCreateAction(data -> {
                 newCourseController.startCourseCreation(data);
                 homePanel.getSessionConfigPanel().setupSessions(
-                    data.getDataInizio(),
-                    data.getFrequenza(),
-                    data.getNumSessioni()
+                    data.getDataInizio(), data.getFrequenza(), data.getNumSessioni()
                 );
                 homePanel.showPanel("SESSIONCONFIG");
             });
@@ -56,10 +49,10 @@ public class Main {
             // ── Dashboard: dettaglio corso ────────────────────────────────
             homePanel.getDashboardPanel().setDettagliAction(corsoController::mostraDettaglioCorso);
 
-            // ── SessionConfig: conferma creazione corso ───────────────────
+            // ── SessionConfig: conferma ───────────────────────────────────
             homePanel.getSessionConfigPanel().setConfermaAction(sessions -> {
-                boolean success = newCourseController.confirmCourseWithSessions(sessions);
-                if (success) {
+                boolean ok = newCourseController.confirmCourseWithSessions(sessions);
+                if (ok) {
                     homePanel.getNewCoursePanel().clearFields();
                     homePanel.showPanel("DASHBOARD");
                     authController.refreshDashboard();
@@ -82,7 +75,6 @@ public class Main {
             // ── Login ─────────────────────────────────────────────────────
             loginPanel.setLoginAction(authController::login);
 
-            // Registrazione view
             frame.addView("LOGIN", loginPanel);
             frame.addView("HOME",  homePanel);
 
