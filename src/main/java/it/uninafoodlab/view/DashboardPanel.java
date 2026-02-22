@@ -133,7 +133,7 @@ public class DashboardPanel extends BasePanel {
         if (corsi.isEmpty()) {
             JLabel emptyLabel = new JLabel("Nessun corso trovato");
             emptyLabel.setFont(new Font("Arial", Font.ITALIC, 16));
-            emptyLabel.setForeground(Color.GRAY);
+            emptyLabel.setForeground(Color.GRAY.darker());
             emptyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
             corsiContainer.add(Box.createVerticalStrut(50));
             corsiContainer.add(emptyLabel);
