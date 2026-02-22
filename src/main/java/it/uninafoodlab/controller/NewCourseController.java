@@ -65,6 +65,7 @@ public class NewCourseController {
                     // Sessione Online
                     SessioneOnline sessione = new SessioneOnline(
                         sessionData.getData(),
+                        sessionData.getOra(),
                         120, // Durata default 2 ore
                         sessionData.getLink(),
                         idCorso
@@ -75,6 +76,7 @@ public class NewCourseController {
                     // Sessione Pratica
                     SessionePratica sessione = new SessionePratica(
                         sessionData.getData(),
+                        sessionData.getOra(),
                         180, // Durata default 3 ore
                         sessionData.getLuogo(),
                         idCorso
