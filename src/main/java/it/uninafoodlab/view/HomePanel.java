@@ -15,12 +15,18 @@ public class HomePanel extends BasePanel {
     private JLabel emailLabel;
     private JLabel specLabel;
 
+    private JButton logoutBtn;
+    
     private DashboardPanel    dashboardPanel;
     private NewCoursePanel    newCoursePanel;
     private SessionConfigPanel sessionConfigPanel;
     private DettagliCorsoPanel dettagliCorsoPanel;
     private ReportPanel        reportPanel;
 
+    // Callback iniettato da Main / AuthController
+    private Runnable onLogoutAction;
+    
+    
     public HomePanel() {
         setLayout(new BorderLayout());
         setBackground(UiUtil.UNINA_GREY);
@@ -37,15 +43,46 @@ public class HomePanel extends BasePanel {
 
         sideBar.add(createProfilePanel(), BorderLayout.NORTH);
         sideBar.add(createNavPanel(),     BorderLayout.CENTER);
+        
+
+
 
         add(sideBar, BorderLayout.WEST);
     }
 
-    private JPanel createProfilePanel() {
+    private JPanel createProfilePanel() {        
+    	
+    	
+        
         JPanel profile = new JPanel();
         profile.setLayout(new BoxLayout(profile, BoxLayout.Y_AXIS));
         profile.setBackground(UiUtil.UNINA_BLUE.darker());
         profile.setBorder(BorderFactory.createEmptyBorder(20, 20, 40, 20));
+        
+        JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(UiUtil.UNINA_BLUE.darker());
+        
+        logoutBtn = new JButton("logout");
+        logoutBtn.setFont(new Font("Arial", Font.BOLD, 12));
+        logoutBtn.setFocusPainted(false);
+        logoutBtn.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+        logoutBtn.addActionListener(e -> {
+        	int risposta = JOptionPane.showConfirmDialog(
+                HomePanel.this,
+                "Sei sicuro di voler effettuare il logout?",
+                "Conferma Logout",
+                JOptionPane.YES_NO_OPTION,
+               JOptionPane.QUESTION_MESSAGE
+            );
+            if (risposta != JOptionPane.YES_OPTION) return;
+            if (onLogoutAction != null) onLogoutAction.run();
+        });
+        
+        topPanel.add(logoutBtn, BorderLayout.WEST);
+        
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.Y_AXIS));
+        centerPanel.setBackground(UiUtil.UNINA_BLUE.darker());
 
         JLabel avatar = new JLabel(new ImageIcon(
             new ImageIcon(getClass().getResource("/avatar.png"))
@@ -69,13 +106,16 @@ public class HomePanel extends BasePanel {
         specLabel.setForeground(Color.WHITE);
         specLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        profile.add(avatar);
-        profile.add(Box.createVerticalStrut(10));
-        profile.add(nameLabel);
-        profile.add(Box.createVerticalStrut(4));
-        profile.add(emailLabel);
-        profile.add(Box.createVerticalStrut(4));
-        profile.add(specLabel);
+        centerPanel.add(avatar);
+        centerPanel.add(Box.createVerticalStrut(10));
+        centerPanel.add(nameLabel);
+        centerPanel.add(Box.createVerticalStrut(4));
+        centerPanel.add(emailLabel);
+        centerPanel.add(Box.createVerticalStrut(4));
+        centerPanel.add(specLabel);
+        
+        profile.add(topPanel, BorderLayout.NORTH);
+        profile.add(centerPanel, BorderLayout.CENTER);
 
         return profile;
     }
@@ -148,6 +188,10 @@ public class HomePanel extends BasePanel {
 
     // ── API per il controller ────────────────────────────────────────────────
 
+    public void setLogoutAction(Runnable action) {
+        this.onLogoutAction = action;
+    }
+    
     public void showChef(Chef chef, List<Corso> corsi) {
         nameLabel.setText(chef.getNome());
         emailLabel.setText(chef.getEmail());
