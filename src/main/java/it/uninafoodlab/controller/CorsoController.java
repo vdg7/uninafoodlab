@@ -55,8 +55,9 @@ public class CorsoController {
             for (Ricetta r : ricette) {
                 r.setIngredienti(RicettaIngredienteDAO.getByRicetta(r.getIdRicetta()));
             }
+            int numIscritti = IscrizioneDAO.countByCorso(corso.getIdCorso());
 
-            dettaglioPanel.loadCorso(corso, online, pratiche, ricette);
+            dettaglioPanel.loadCorso(corso, online, pratiche, ricette, numIscritti);
             homePanel.showPanel("DETTAGLIO");
 
         } catch (Exception e) {

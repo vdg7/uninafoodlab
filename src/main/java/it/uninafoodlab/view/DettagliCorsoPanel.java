@@ -137,7 +137,8 @@ public class DettagliCorsoPanel extends BasePanel {
     public void loadCorso(Corso corso,
                           List<SessioneOnline>  sessioniOnline,
                           List<SessionePratica> sessioniPratiche,
-                          List<Ricetta>         ricetteConIngredienti) {
+                          List<Ricetta>         ricetteConIngredienti,
+                          int numIscritti) {
         this.corsoCorrente = corso;
 
         titoloLabel.setText(corso.getTitolo());
@@ -162,7 +163,7 @@ public class DettagliCorsoPanel extends BasePanel {
                 List<Ricetta> ricetteSessione = ricetteConIngredienti.stream()
                     .filter(r -> r.getIdSessionePratica() == s.getIdSessionePratica())
                     .toList();
-                sessioniContainer.add(createSessionePraticaCard(s, ricetteSessione));
+                sessioniContainer.add(createSessionePraticaCard(s, ricetteSessione, numIscritti));
                 sessioniContainer.add(Box.createVerticalStrut(10));
             }
         }
@@ -241,7 +242,7 @@ public class DettagliCorsoPanel extends BasePanel {
 
     // ── Card sessione pratica ─────────────────────────────────────────────────
 
-    private JPanel createSessionePraticaCard(SessionePratica sessione, List<Ricetta> ricette) {
+    private JPanel createSessionePraticaCard(SessionePratica sessione, List<Ricetta> ricette, int numIscritti) {
         JPanel card = new JPanel(new BorderLayout(10, 0));
         card.setBackground(Color.WHITE);
         card.setBorder(BorderFactory.createCompoundBorder(
@@ -271,12 +272,19 @@ public class DettagliCorsoPanel extends BasePanel {
         luogoLabel.setFont(new Font("Arial", Font.PLAIN, 12));
         luogoLabel.setForeground(Color.GRAY);
         luogoLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        
+        JLabel iscrittiLabel = new JLabel("Studenti che partecipano: " + numIscritti);
+        iscrittiLabel.setFont(new Font("Arial", Font.BOLD, 13));
+        iscrittiLabel.setForeground(new Color(39, 174, 96));
+        iscrittiLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         infoPanel.add(tipoLabel);
         infoPanel.add(Box.createVerticalStrut(5));
         infoPanel.add(dataLabel);
         infoPanel.add(Box.createVerticalStrut(3));
         infoPanel.add(luogoLabel);
+        infoPanel.add(Box.createVerticalStrut(3));
+        infoPanel.add(iscrittiLabel);
 
         // Ricette
         if (!ricette.isEmpty()) {
